@@ -42,7 +42,7 @@
           <text class="user-name">{{userInfo.nickName}}</text>
         </block>
       </view>
-      <image class="set-img" src="/images/set.png" />
+      <image class="set-img" src="/images/set.png" bindtap="openSetModal" />
       </view>
       <view class="account-wrap">
         <view class="account-left">
@@ -72,7 +72,13 @@
           </view>
         </view>
         <view class="clock-task-list">
-          <view wx:for="{{clockInTaskList}}" wx:key="day" class="clock-task-item {{item.status === 1 ? 'has-received' : ''}}">
+          <view
+            wx:for="{{clockInTaskList}}" 
+            wx:key="day" 
+            class="clock-task-item {{item.status === 1 ? 'has-received' : ''}}"
+            data-item="{{item}}"
+            bindtap="applyWithdraw"
+           >
             <image class="clock-bg-img" src="/images/day_clockin_bg{{item.status === 1 ? '_gray' : ''}}.png" />
             <view class="clock-task-left">
               <view class="clock-count-wrap">
@@ -118,3 +124,32 @@
     </view>
   </view>
 </view>
+
+<dialog show="{{withdrawVisile}}" ext-class="withdraw-modal" mask-closable="{{false}}">
+  <view class="modal-content-wrap">
+    <image class="close-img" src="/images/modal_close.png" bindtap="closeModal" />
+    <image class="modal-header-bg" src="/images/modal_bg.png" />
+    <view class="modal-content">
+      <block wx:if="{{modalType === 0}}">
+        <view class="modal-title">申请成功</view>
+        <view class="modal-draw-tips">
+          提现申请成功！客服将在1个工作日内给您打款
+        </view>
+        <view class="primary-btn" bindtap="closeModal">
+          好的
+        </view>
+      </block>
+      <block wx:else>
+        <view class="modal-title">提现设置</view>
+        <view class="modal-draw-tips">
+          温馨提示：请上传您的<text class="qrcode-text">收款二维码</text>，
+          客服将通过该收款二维码给您打款
+        </view>
+        <view class="primary-btn" bindtap="uploadImg">
+          <image class="upload-img" src="/images/upload.png" />
+          立即上传
+        </view>
+      </block>
+    </view>
+  </view>
+</dialog>

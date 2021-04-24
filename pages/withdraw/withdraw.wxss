@@ -346,3 +346,97 @@ page {
   color: #5C5E66;
   line-height: 40rpx;
 }
+
+.withdraw-modal .weui-dialog .weui-dialog__hd,.withdraw-modal .weui-dialog .weui-dialog__ft {
+  display: none;
+}
+
+.withdraw-modal .weui-dialog .weui-dialog__bd  {
+  padding: 0;
+  margin-bottom: 0;
+  overflow: visible;
+  background-color: transparent;
+}
+
+.withdraw-modal .weui-dialog {
+  overflow: visible;
+  background-color: transparent;
+  width: 590rpx;
+}
+
+
+.withdraw-modal .modal-content-wrap {
+  position: relative;
+  padding: 64rpx;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 32rpx;
+}
+
+.modal-content-wrap .modal-header-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+
+.modal-content-wrap .modal-content {
+  margin-top: 16rpx;
+  position: relative;
+  z-index: 10;
+  text-align: left;
+}
+
+.modal-content .modal-title {
+  font-size: 60rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #2E2F33;
+  line-height: 60rpx;
+}
+
+.modal-content-wrap .close-img {
+  position: absolute;
+  top: -80rpx;
+  right: 0;
+  width: 48rpx;
+  height: 48rpx;
+  z-index: 100;
+}
+
+.modal-content .modal-draw-tips {
+  margin-top: 32rpx;
+  font-size: 28rpx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #999999;
+  line-height: 40rpx;
+}
+
+.modal-draw-tips .qrcode-text {
+  font-weight: 500;
+  color: black;
+}
+
+.modal-content .primary-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 160rpx;
+  background: linear-gradient(270deg, #FF3479 0%, #FF703C 100%);
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 100rpx;
+}
+
+.primary-btn .upload-img {
+  margin-right: 16rpx;
+  width: 32rpx;
+  height: 32rpx;
+}

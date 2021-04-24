@@ -41,6 +41,8 @@ Page({
       count: 50000,
       status: 0,
     }],
+    withdrawVisile: false,
+    modalType: 0,
   },
 
   /**
@@ -137,5 +139,50 @@ Page({
       userInfo: e.detail.userInfo,
       hasUserInfo: true
     })
+  },
+
+  /**
+   * 申请提现
+   * @param {*} e 
+   */
+  applyWithdraw(e) {
+    const { item } = e.currentTarget.dataset;
+    console.log(item);
+    if (item.status !== 1) {
+      this.showModal(0);
+    }
+  },
+
+  /**
+   * 显示提现设置弹窗
+   */
+  openSetModal() {
+    this.showModal(1);
+  },
+
+  /**
+   * 显示弹窗
+   */
+  showModal(modalType) {
+    this.setData({
+      withdrawVisile: true,
+      modalType,
+    });
+  },
+
+  /**
+   * 关闭弹窗
+   */
+  closeModal() {
+    this.setData({
+      withdrawVisile: false,
+    });
+  },
+
+  /**
+   * 上传二维码图片
+   */
+  uploadImg() {
+
   }
 })
