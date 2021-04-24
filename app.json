@@ -1,0 +1,44 @@
+{
+  "pages":[
+    "pages/answer/answer",
+    "pages/task/task",
+    "pages/withdraw/withdraw",
+    "pages/logs/logs"
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "今晚打老虎",
+    "navigationBarTextStyle":"black",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "custom": true,
+    "selectedColor": "#D81E06",
+    "list": [
+      {
+        "pagePath": "pages/answer/answer",
+        "text": "答题",
+        "iconPath": "images/answer_default.png",
+        "selectedIconPath": "images/answer_select.png"
+      },
+      {
+        "pagePath": "pages/task/task",
+        "text": "任务",
+        "iconPath": "images/task_default.png",
+        "selectedIconPath": "images/task_select.png"
+      },
+      {
+        "pagePath": "pages/withdraw/withdraw",
+        "text": "提现",
+        "iconPath": "images/withdraw_default.png",
+        "selectedIconPath": "images/withdraw_select.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "useExtendedLib": {
+    "weui": true
+  }
+}

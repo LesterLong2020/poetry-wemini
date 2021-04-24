@@ -1,0 +1,348 @@
+/* pages/withdraw/withdraw.wxss */
+
+page {
+  height: calc(100% - 100rpx);
+}
+
+.container {
+  position: relative;
+  padding-top: 0;
+}
+
+.scroll-wrap {
+  position: relative;
+  padding: 112rpx 32rpx 45rpx;
+}
+
+.container .content-wrap{
+  position: relative;
+  z-index: 10;
+}
+
+.container .bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.container .user-wrap {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-wrap .user-info {
+  display: flex;
+  align-items: center;
+  color: #aaa;
+}
+
+.user-info .user-avatar {
+  overflow: hidden;
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+}
+
+.user-info .user-name {
+  margin-left: 16rpx;
+  font-size: 36prx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #FFFFFF;
+  line-height: 36rpx;
+}
+
+.user-wrap .set-img {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.user-info .avatar-btn {
+  width: fit-content;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.container .account-wrap {
+  margin-top: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.account-wrap .account-left {
+  display: flex;
+}
+
+.account-left .account-item:last-child {
+  margin-left: 80rpx;
+}
+
+.account-item .account-count {
+  font-size: 48rpx;
+  font-family: ALIBABAFont-Bold, ALIBABAFont;
+  font-weight: bold;
+  color: #FFFFFF;
+  line-height: 48rpx;
+}
+
+.account-item .account-desc {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #FFFFFF;
+  line-height: 24rpx;
+}
+
+.account-wrap .account-img {
+  width: 144rpx;
+  height: 96rpx;
+}
+
+.content-wrap .module-wrap {
+  margin-top: 32rpx;
+  width: 100%;
+  padding: 40rpx;
+  background-color: #FFFFFF;
+  border-radius: 32rpx;
+  box-sizing: border-box;
+}
+
+.module-wrap .module-title {
+  display: flex;
+  justify-content: space-between;
+  align-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.module-title .title-text {
+  font-size: 36rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #2E2F33;
+  line-height: 36rpx;
+}
+
+.module-title .clock-in-desc {
+  font-size: 20rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #2E2F33;
+}
+
+.module-title .clock-in-count {
+  color: #FF403E;
+  padding: 0 6rpx;
+}
+
+.module-wrap .day-wrap {
+  width: 100%;
+  padding: 32rpx;
+  background: #F8F9FA;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+}
+
+.day-wrap .progress-outter {
+  width: 100%;
+  height: 10rpx;
+  background: #FFFFFF;
+  border-radius: 5rpx;
+}
+
+.progress-outter .progress-inner {
+  height: 100%;
+  background: linear-gradient(270deg, #FF3479 0%, #FF703C 100%);
+  border-radius: 5rpx;
+}
+
+.day-wrap .day-tip-wrap {
+  margin-top: 24rpx;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24rpx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #2E2F33;
+  line-height: 24rpx;
+}
+
+.module-wrap .clock-task-list {
+  margin-top: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: flex-start;
+}
+
+.clock-task-list .clock-task-item {
+  position: relative;
+  margin-top: 16rpx;
+  padding: 32rpx;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 295rpx;
+  height: 154rpx;
+  background: linear-gradient(180deg, #FFF9F0 0%, #FFEED7 100%);
+  border-radius: 16rpx;
+  box-sizing: border-box;
+}
+
+.clock-task-item .clock-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+
+.clock-task-item .clock-task-left {
+  position: relative;
+  z-index: 10;
+}
+
+.module-wrap .clock-count-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.clock-count-wrap .clock-count-text {
+  font-size: 48rpx;
+  font-family: ALIBABAFont-Bold, ALIBABAFont;
+  font-weight: bold;
+  color: #2E2F33;
+  line-height: 48rpx;
+}
+
+.clock-count-wrap .clock-count-unit {
+  position: relative;
+  bottom: 5rpx;
+  margin-left: 2rpx;
+  font-size: 24rpx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #2E2F33;
+  line-height: 24rpx;
+}
+
+.clock-task-left .clock-day-desc {
+  margin-top: 11rpx;
+  font-size: 24rpx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #5C5E66;
+  line-height: 24rpx;
+}
+
+.clock-day-desc .clock-day-count {
+  color: #FF403E;
+  padding: 0 8rpx;
+}
+
+.clock-task-item.has-received .clock-task-left .clock-count-wrap .clock-count-text,
+.clock-task-item.has-received .clock-task-left .clock-count-wrap .clock-count-unit,
+.clock-task-item.has-received .clock-task-left .clock-day-desc,
+.clock-task-item.has-received .clock-task-left .clock-day-desc .clock-day-count {
+  color: #B8BCCC;
+}
+
+.clock-task-item .clock-task-right {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40rpx;
+  height: 40rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  z-index: 10;
+}
+
+.clock-task-right .clock-right-img {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.module-wrap .withdraw-list {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.withdraw-list .withdraw-item {
+  position: relative;
+  width: 191rpx;
+  height: 202rpx;
+  padding: 31rpx 24rpx 40rpx;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+}
+
+.withdraw-item .withdraw-bg-img {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+}
+
+.withdraw-item .withdraw-item-content {
+  position: relative;
+  z-index: 10;
+}
+
+.withdraw-item-content .clock-count-wrap {
+  justify-content: center;
+}
+
+.withdraw-item-content .withdraw-btn {
+  margin-top: 20rpx;
+  width: 144rpx;
+  height: 64rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #FF703C;
+  line-height: 64rpx;
+  text-align: center;
+}
+
+.withdraw-item .limit-tips {
+  position: absolute;
+  top: -14rpx;
+  right: 0;
+  height: 28rpx;
+  padding: 0 4rpx;
+  background: linear-gradient(360deg, #FF3479 0%, #FF703C 100%);
+  border-radius: 14rpx 14rpx 14rpx 4rpx;
+  font-size: 20rpx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #FFFFFF;
+  line-height: 28rpx;
+  z-index: 10;
+}
+
+.module-wrap .withdraw-desc {
+  font-size: 28rpx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #5C5E66;
+  line-height: 40rpx;
+}

@@ -1,0 +1,116 @@
+<!--pages/task/task.wxml-->
+<wxs module="account">
+  var formatMoney = function (num) {
+    return parseFloat((num / 100).toFixed(2));
+  }
+  var formatThousand = function (num) {
+    var reg = getRegExp('(\d)(?=(?:\d{3})+$)', 'g')
+    return (num || 0).toString().replace(reg, '$1,');
+  }
+  module.exports.formatMoney = formatMoney;
+  module.exports.formatThousand = formatThousand;
+</wxs>
+
+<navigation title="任务" show-back="{{false}}" show-home="{{false}}" />
+<view class="container">
+  <image class="bg-img" src="/images/index_bg.png" />
+  <view class="header-wrap">
+    <view class="account-wrap">
+      <view class="account-item">
+        <image class="account-img" src="/images/money.png" />
+        <text class="account-text">{{account.formatMoney(accountInfo.money)}}</text>
+      </view>
+      <view class="account-item">
+        <image class="account-img" src="/images/gold.png" />
+        <text class="account-text">{{account.formatThousand(accountInfo.gold)}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="content-wrap">
+    <view class="tab-list">
+      <view 
+        wx:for="{{tabList}}" 
+        class="tab-item {{tabIndex === index ? 'active' : ''}}" 
+        wx:key="*this" 
+        data-index="{{index}}"
+        bindtap="tabClick"
+      >
+        {{item}}
+      </view>
+    </view>
+    <view class="tab-content-wrap">
+      <view class="task-list {{tabIndex === 0 ? 'task-show' : ''}}">
+        <view wx:for="{{taskList}}" wx:key="id" class="task-item">
+          <view class="task-left">
+            <view class="task-info">
+              <text>{{item.name}}</text>
+              <text class="task-count">{{item.pass}} / {{item.total}}</text>
+            </view>
+            <view class="task-reward">
+              <image class="gold-img" src="/images/gold_samall.png" />
+              <text class="gold-count">+{{item.goldCount}}</text>
+            </view>
+          </view>
+          <view class="right-btn right-btn-one" wx:if="{{item.pass >= item.total && item.status === 1}}">已领取</view>
+          <view 
+            class="right-btn right-btn-two" 
+            wx:elif="{{item.pass >= item.total && item.status === 0}}"
+            data-id="{{item.id}}"
+            bindtap="acceptReward"
+          >领取</view>
+          <view class="right-btn right-btn-three" wx:else>未完成</view>
+        </view>
+      </view>
+      <view class="red-envelope-list {{tabIndex === 1 ? 'red-show' : ''}}">
+        <view wx:for="{{redEnvelopeList}}" wx:key="id" class="red-envelope-item">
+          <image class="red-envelope-img" src="/images/red_{{item.timLeft === 0 ? 'common' : 'disabled'}}.png" />
+          <view 
+            class="red-envelope-btn" 
+            wx:if="{{item.timLeft === 0}}"
+            data-id="{{item.id}}"
+            bindtap="openRedEnvelope"
+          >拆开</view>
+          <view class="red-countdown" wx:else>
+            <view class="red-progress-wrap">
+              <view class="red-progress-bar" style="width: {{(redEnvelopeInterval - item.timLeft) * 100 / redEnvelopeInterval}}%" />
+            </view>
+            <view class="red-interval">{{item.timLeftStr}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<dialog show="{{envelopeVisible}}" ext-class="envelope-modal" mask-closable="{{false}}">
+  <view class="envelope-wrap">
+    <image class="close-img" src="/images/modal_close.png" bindtap="closeEnvelope" />
+    <image class="envelope-name" src="/images/{{envelopeImgNames[redEnvelope.type]}}.png" />
+    <image class="envelope-bg" src="/images/envelope_bg.png" />
+    <view class="envelope-content">
+      <view wx:if="{{redEnvelope.type === 2}}" class="envelope-gold">
+        <image class="envelope-gold-img" src="/images/gold_samall.png" />
+        <text class="envelope-gold-count">+{{redEnvelope.count}}</text>
+      </view>
+      <block wx:else>
+        <view wx:if="{{redEnvelope.count > 100}}" class="envelope-cash">
+          <text class="cash-unit">￥</text>
+          <text class="cash-count">{{account.formatMoney(275)}}</text>
+        </view>
+        <view wx:else class="cash-tips">恭喜您</view>
+      </block>
+      <view class="envelope-tips">获得一个{{redEnvelope.type === 2 ? '金币' : '现金'}}红包</view>
+      <view class="accept-btn" bindtap="acceptEnvelope">
+        <view wx:if="{{redEnvelope.type === 2}}" class="accept-video-wrap">
+            <image class="accept-video-img" src="/images/video_icon.png" />
+            <text>看视频奖励翻50倍</text>
+          </view>
+        <block wx:else>
+          <view class="accept-text">收下</view>
+          <view class="ad-text">看视频领取</view>
+        </block>
+      </view>
+      <view class="accept-direct" bindtap="closeEnvelope">直接收下</view>
+    </view>
+  </view>
+</dialog>

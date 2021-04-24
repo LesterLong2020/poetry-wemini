@@ -1,0 +1,120 @@
+<!--pages/withdraw/withdraw.wxml-->
+
+<wxs module="account">
+  var formatMoney = function (num) {
+    return parseFloat((num / 100).toFixed(2));
+  }
+  var formatThousand = function (num) {
+    var reg = getRegExp('(\d)(?=(?:\d{3})+$)', 'g')
+    return (num || 0).toString().replace(reg, '$1,');
+  }
+  module.exports.formatMoney = formatMoney;
+  module.exports.formatThousand = formatThousand;
+</wxs>
+
+<navigation title="提现" show-back="{{false}}" show-home="{{false}}" />
+<view class="container">
+  <view class="scroll-wrap">
+    <image class="bg-img" src="/images/index_bg.png" />
+    <view class="content-wrap">
+      <view class="user-wrap">
+      <view class="user-info">
+        <block wx:if="{{canIUseOpenData}}" calss="userinfo-opendata">
+          <view class="user-avatar">
+            <open-data type="userAvatarUrl" />
+          </view>
+          <open-data class="user-name" type="userNickName" />
+        </block>
+        <block wx:elif="{{!hasUserInfo}}">
+          <button wx:if="{{canIUseGetUserProfile}}" class="avatar-btn"  bindtap="getUserProfile">
+            <image class="user-avatar" src="/images/avatar.png" />
+            <text class="user-name">立即登录</text>
+          </button>
+          <button wx:elif="{{canIUse}}" class="avatar-btn" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+            <image class="user-avatar" src="/images/avatar.png" /> 
+            <text class="user-name">立即登录</text>
+          </button>
+          <image wx:else class="user-avatar" src="/images/avatar.png" /> 
+          <!-- <view wx:else class="user-name"> 请使用1.4.4及以上版本基础库以获取用户信息 </view> -->
+        </block>
+        <block wx:else>
+          <image class="user-avatar" src="{{userInfo.avatarUrl}}" mode="cover" />
+          <text class="user-name">{{userInfo.nickName}}</text>
+        </block>
+      </view>
+      <image class="set-img" src="/images/set.png" />
+      </view>
+      <view class="account-wrap">
+        <view class="account-left">
+          <view class="account-item">
+            <view class="account-count">{{account.formatMoney(accountInfo.money)}}</view>
+            <view class="account-desc">现金账户(元)</view>
+          </view>
+          <view class="account-item">
+            <view class="account-count">{{account.formatThousand(accountInfo.gold)}}</view>
+            <view class="account-desc">金币账户</view>
+          </view>
+        </view>
+        <image class="account-img" src="/images/exchange.png" />
+      </view>
+      <view class="module-wrap">
+        <view class="module-title">
+          <text class="title-text">打卡提现</text>
+          <view class="clock-in-desc">已连打<text class="clock-in-count">5</text>天</view>
+        </view>
+        <view class="day-wrap">
+          <view class="progress-outter">
+            <view style="width: {{5*100/10}}%" class="progress-inner" />
+          </view>
+          <view class="day-tip-wrap">
+            <text>再领{{10-5}}个过关红包完成今日打卡</text>
+            <text>{{5}}/{{10}}</text>
+          </view>
+        </view>
+        <view class="clock-task-list">
+          <view wx:for="{{clockInTaskList}}" wx:key="day" class="clock-task-item {{item.status === 1 ? 'has-received' : ''}}">
+            <image class="clock-bg-img" src="/images/day_clockin_bg{{item.status === 1 ? '_gray' : ''}}.png" />
+            <view class="clock-task-left">
+              <view class="clock-count-wrap">
+                <text class="clock-count-text">{{account.formatMoney(item.count)}}</text>
+                <text class="clock-count-unit">元</text>
+              </view>
+              <view class="clock-day-desc">已连打<text class="clock-day-count">5</text>天</view>
+            </view>
+            <view class="clock-task-right">
+              <image class="clock-right-img" src="/images/right_red.png" />
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="module-wrap">
+        <view class="module-title">
+          <text class="title-text">常规提现</text>
+        </view>
+        <view class="withdraw-list">
+          <view wx:for="{{withdrawList}}" wx:key="count" class="withdraw-item">
+            <image class="withdraw-bg-img" src="/images/common_withdraw_bg.png" />
+            <view class="limit-tips">限领1次</view>
+            <view class="withdraw-item-content">
+              <view class="clock-count-wrap">
+                <text class="clock-count-text">{{account.formatMoney(item.count)}}</text>
+                <text class="clock-count-unit">元</text>
+              </view>
+              <view class="withdraw-btn">提现</view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="module-wrap">
+        <view class="module-title">
+          <text class="title-text">提现说明</text>
+        </view>
+        <view class="withdraw-desc">
+          <view>1.由于微信提现支付需要实名制，请务必保证提现的微信号进行实名认证</view>
+          <view>2.单笔提现金额最低0.3元，最高500元，每种金额均仅提现一次（即最多可提现7次）</view>
+          <view>3.如发现作弊、外挂等违规手段获取奖励，答题红包有权判定奖励无效</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

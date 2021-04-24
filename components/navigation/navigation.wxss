@@ -1,0 +1,28 @@
+/* components/navigation/navigation.wxss */
+
+.pagination-wrap {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  z-index: 1000;
+}
+
+.pagination-wrap .back-img {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.pagination-wrap .home-img {
+  width: 40rpx;
+  height: 40rpx;
+  margin-left: 20rpx;
+}
+
+.pagination-wrap .title {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32rpx;
+  font-weight: bold;
+  color: white;
+}

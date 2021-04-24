@@ -1,0 +1,6 @@
+<!--components/navigation/navigation.wxml-->
+<view class="pagination-wrap" style="left: {{left}};top: {{top}};width: {{width}};height: {{height}}" >
+  <image wx:if="{{showBack}}" class="back-img" src="/images/back.png" bindtap="back" />
+  <image wx:if="{{showHome}}" class="home-img" src="/images/home.png" bindtap="goHome" />
+  <text class="title">{{title}}</text>
+</view>

@@ -1,0 +1,107 @@
+<!--pages/anwser/anwser.wxml-->
+
+<wxs module="account">
+  var formatMoney = function (num) {
+    return parseFloat((num / 100).toFixed(2));
+  }
+  var formatThousand = function (num) {
+    var reg = getRegExp('(\d)(?=(?:\d{3})+$)', 'g')
+    return (num || 0).toString().replace(reg, '$1,');
+  }
+  module.exports.formatMoney = formatMoney;
+  module.exports.formatThousand = formatThousand;
+</wxs>
+
+<navigation title="答题拆红包" show-back="{{false}}" show-home="{{false}}" />
+<view class="container">
+  <image class="bg-img" src="/images/index_bg.png" />
+  <view class="header-wrap">
+    <view class="account-wrap">
+      <view class="account-item">
+        <image class="account-img" src="/images/money.png" />
+        <text id="moneny-count" class="account-text">{{account.formatMoney(accountInfo.money)}}</text>
+      </view>
+      <view class="account-item">
+        <image class="account-img" src="/images/gold.png" />
+        <text id="gold-count" class="account-text">{{account.formatThousand(accountInfo.gold)}}</text>
+      </view>
+    </view>
+    <view class="envelope-wrap" bindtap="openEnvelopeModal">
+      <image class="red-envelope" src="/images/red_envelope.png" />
+      <text class="envelope-text">{{timeLeft > 0 ? timeLeftStr : '天降红包'}}</text>
+    </view>
+  </view>
+  <view class="content-wrap">
+    <view class="title-wrap">
+      <image class="title-img" src="/images/content_header.png" />
+      <view class="title-content">
+        <text class="title-text">第{{questionIndex + 1}}关</text>
+        <text class="title-text">{{questionTypes[question.type]}}</text>
+      </view>
+    </view>
+    <view class="question-wrap">
+      <view wx:if="{{question.type === 0}}" class="idiom-wrap">
+        <view 
+          class="idiom-item {{ question.answer === item ? 'idiom-answer' : '' }}" 
+          wx:for="{{question.questionTitle}}" 
+          wx:key="*this"
+        >
+          <block wx:if="{{question.answer === item}}">
+            {{!chooseAnswer ? '' : item}}
+          </block>
+          <block wx:else>{{item}}</block>
+        </view>
+      </view>
+      <view wx:else class="question-title">{{question.questionTitle}}</view>
+
+      <view class="idiom-tips">{{questionDescs[question.type]}}</view>
+        <view class="answer-list">
+          <view 
+            class="answer-item {{ chooseAnswer && item === question.answer ? 'answer-right' : '' }} {{ chooseAnswer && question.answer !== chooseAnswer && chooseAnswer === item ? 'answer-error' : ''}}" 
+            wx:for="{{question.answerList}}" 
+            wx:key="*this"
+            data-answer="{{item}}"
+            bindtap="hanldeChooseAnswer"
+          >
+            {{item}}
+            <image 
+              wx:if="{{chooseAnswer && item === question.answer}}" 
+              class="answer-icon" 
+              src="/images/check.png" 
+            />
+            <image 
+              wx:if="{{chooseAnswer && question.answer !== chooseAnswer && chooseAnswer === item}}" 
+              class="answer-icon" 
+              src="/images/close.png" 
+            />
+          </view>
+        </view>
+    </view>
+  </view>
+</view>
+
+<dialog show="{{envelopeVisible}}" ext-class="envelope-modal" mask-closable="{{false}}">
+  <view class="envelope-wrap">
+    <image class="close-img" src="/images/modal_close.png" bindtap="closeEnvelope" />
+    <image class="envelope-name" src="/images/{{envelopeImgNames[redEnvelope.type]}}.png" />
+    <image class="envelope-bg" src="/images/envelope_bg.png" />
+    <view class="envelope-content">
+      <view wx:if="{{redEnvelope.type === 2}}" class="envelope-gold">
+        <image class="envelope-gold-img" src="/images/gold_samall.png" />
+        <text class="envelope-gold-count">+{{redEnvelope.count}}</text>
+      </view>
+      <block wx:else>
+        <view wx:if="{{redEnvelope.count > 100}}" class="envelope-cash">
+          <text class="cash-unit">￥</text>
+          <text class="cash-count">{{account.formatMoney(redEnvelope.count)}}</text>
+        </view>
+        <view wx:else class="cash-tips">恭喜您</view>
+      </block>
+      <view class="envelope-tips">获得一个{{redEnvelope.type === 2 ? '金币' : '现金'}}红包</view>
+      <view class="accept-btn" bindtap="acceptEnvelope">
+        <view class="accept-text">收下</view>
+        <view class="ad-text">看视频领取</view>
+      </view>
+    </view>
+  </view>
+</dialog>
