@@ -31,11 +31,11 @@
 }
 
 .tab-bar-item .bar-icon {
-  width: 54rpx;
-  height: 54rpx;
+  width: 40rpx;
+  height: 40rpx;
 }
 
 .tab-bar-item .bar-text {
-  margin-top: 6rpx;
+  margin-top: 12rpx;
   font-size: 20rpx;
 }

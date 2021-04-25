@@ -106,7 +106,7 @@
                 <text class="clock-count-text">{{account.formatMoney(item.count)}}</text>
                 <text class="clock-count-unit">元</text>
               </view>
-              <view class="withdraw-btn">提现</view>
+              <view class="withdraw-btn" data-amount="{{item.count}}" bindtap="commonWithdraw">提现</view>
             </view>
           </view>
         </view>
@@ -139,7 +139,7 @@
           好的
         </view>
       </block>
-      <block wx:else>
+      <block wx:elif="{{modalType === 1}}">
         <view class="modal-title">提现设置</view>
         <view class="modal-draw-tips">
           温馨提示：请上传您的<text class="qrcode-text">收款二维码</text>，
@@ -149,6 +149,24 @@
           <image class="upload-img" src="/images/upload.png" />
           立即上传
         </view>
+      </block>
+      <block wx:else>
+        <view class="modal-title-wrap">
+          <view class="modal-title">提现设置</view>
+          <view class="redo-wrap" bindtap="uploadImg">
+            <image class="redo-img" src="/images/redo.png" />
+            重新上传
+          </view>
+        </view>
+        <view class="modal-draw-tips">
+          温馨提示：请确保您上传的<text class="qrcode-text">收款二维码</text>
+          无误，客服将通过该收款二维码给您打款
+        </view>
+        <image class="qr-code-img" src="{{qrCodeUrl}}" />
+        <view class="save-btn" bindtap="saveQrCode">
+          保存
+        </view>
+        <view class="cancel-btn" bindtap="closeModal">取消</view>
       </block>
     </view>
   </view>

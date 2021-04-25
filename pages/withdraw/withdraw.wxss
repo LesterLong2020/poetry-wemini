@@ -440,3 +440,60 @@ page {
   width: 32rpx;
   height: 32rpx;
 }
+
+.modal-content .modal-title-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title-wrap .redo-wrap {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 136rpx;
+  padding: 8rpx 16rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  font-size: 20rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #FF3D3B;
+}
+
+.redo-wrap .redo-img {
+  margin-right: 4rpx;
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.modal-content .qr-code-img {
+  margin: 32rpx auto 0;
+  display: block;
+  width: 200rpx;
+  height: 272rpx;
+}
+
+.modal-content .save-btn {
+  margin-top: 32rpx;
+  width: 100%;
+  background: linear-gradient(270deg, #FF3479 0%, #FF703C 100%);
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 100rpx;
+  text-align: center;
+}
+
+.modal-content .cancel-btn {
+  margin-top: 40rpx;
+  width: 100%;
+  font-size: 32rpx;
+  font-family: PingFangSC-Light, PingFang SC;
+  font-weight: 300;
+  color: #B8BCCC;
+  line-height: 32rpx;
+  text-align: center;
+}

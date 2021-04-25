@@ -43,6 +43,7 @@ Page({
     }],
     withdrawVisile: false,
     modalType: 0,
+    qrCodeUrl: ''
   },
 
   /**
@@ -183,6 +184,52 @@ Page({
    * 上传二维码图片
    */
   uploadImg() {
+    wx.chooseImage({
+      count: 1,
+      success: ({ tempFilePaths }) => {
+        console.log(tempFilePaths);
+        this.setData({
+          modalType: 2,
+          qrCodeUrl: tempFilePaths[0]
+        });
+      },
+    })
+  },
 
+  /**
+   * 常规提现
+   * @param {*} e 
+   */
+  commonWithdraw(e) {
+    const { amount } = e.currentTarget.dataset;
+    const { money } = this.data.accountInfo;
+    wx.showToast({
+      title: money > amount ? '今日提现申请名额已满，请明日及时申请' : '现金账户余额不足',
+      icon: 'none'
+    })
+  },
+
+  /**
+   * 保存收款二维码
+   */
+  saveQrCode() {
+    const { qrCodeUrl } = this.data;
+    wx.showToast({
+      title: '上传中...',
+      icon: 'loading',
+      mask: true
+    });
+    setTimeout(() => {
+      wx.hideToast();
+      // wx.uploadFile({
+      //   url: 'https://example.weixin.qq.com/upload', //仅为示例，非真实的接口地址
+      //   filePath: qrCodeUrl,
+      //   name: 'file',
+      //   formData: {},
+      //   success (res){
+      //     console.log(res);
+      //   }
+      // })
+    }, 1000)
   }
 })
