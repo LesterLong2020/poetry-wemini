@@ -1,4 +1,6 @@
 // app.js
+import { login } from "./utils/api";
+
 App({
   onLaunch() {
     // 展示本地存储能力
@@ -10,15 +12,25 @@ App({
     wx.login({
       success: res => {
         console.log(res)
+        // this.login(res.code);
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
       }
     })
   },
+
+  onShow() {
+    console.log('显示')
+  },
+
+  onHide() {
+    console.log('隐藏')
+  },
+
   globalData: {
-    userInfo: null,
-    accountInfo: {
-      gold: 1800000,
-      money: 18766
-    }
+    userInfo: null
+  },
+
+  async login(code) {
+    const res = await login({ code });
   }
 })

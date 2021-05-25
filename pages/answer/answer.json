@@ -1,6 +1,6 @@
 {
   "usingComponents": {
     "navigation": "/components/navigation/navigation",
-    "dialog": "/miniprogram_npm/weui-miniprogram/dialog/dialog"
+    "dialog": "weui-miniprogram/dialog/dialog"
   }
 }

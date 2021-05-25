@@ -18,11 +18,11 @@
     <view class="account-wrap">
       <view class="account-item">
         <image class="account-img" src="/images/money.png" />
-        <text class="account-text">{{account.formatMoney(accountInfo.money)}}</text>
+        <text id="moneny-count" class="account-text">{{accountInfo.amount}}</text>
       </view>
       <view class="account-item">
         <image class="account-img" src="/images/gold.png" />
-        <text class="account-text">{{account.formatThousand(accountInfo.gold)}}</text>
+        <text id="gold-count" class="account-text">{{account.formatThousand(accountInfo.goldCoinCount)}}</text>
       </view>
     </view>
   </view>
@@ -40,39 +40,40 @@
     </view>
     <view class="tab-content-wrap">
       <view class="task-list {{tabIndex === 0 ? 'task-show' : ''}}">
-        <view wx:for="{{taskList}}" wx:key="id" class="task-item">
+        <view wx:for="{{taskList}}" wx:key="rewardId" class="task-item">
           <view class="task-left">
             <view class="task-info">
-              <text>{{item.name}}</text>
-              <text class="task-count">{{item.pass}} / {{item.total}}</text>
+              <text>今日闯过{{item.levelQuantity}}关</text>
+              <text class="task-count">{{item.currentLevel}} / {{item.levelQuantity}}</text>
             </view>
             <view class="task-reward">
               <image class="gold-img" src="/images/gold_samall.png" />
-              <text class="gold-count">+{{item.goldCount}}</text>
+              <text class="gold-count">+{{item.rewardQuantity}}</text>
             </view>
           </view>
-          <view class="right-btn right-btn-one" wx:if="{{item.pass >= item.total && item.status === 1}}">已领取</view>
+          <view class="right-btn right-btn-one" wx:if="{{item.rewardStatus === 2}}">已领取</view>
           <view 
             class="right-btn right-btn-two" 
-            wx:elif="{{item.pass >= item.total && item.status === 0}}"
-            data-id="{{item.id}}"
+            wx:elif="{{item.rewardStatus === 1}}"
+            data-reward-id="{{item.rewardId}}"
+            data-amount="{{item.rewardQuantity}}"
             bindtap="acceptReward"
           >领取</view>
           <view class="right-btn right-btn-three" wx:else>未完成</view>
         </view>
       </view>
       <view class="red-envelope-list {{tabIndex === 1 ? 'red-show' : ''}}">
-        <view wx:for="{{redEnvelopeList}}" wx:key="id" class="red-envelope-item">
-          <image class="red-envelope-img" src="/images/red_{{item.timLeft === 0 ? 'common' : 'disabled'}}.png" />
+        <view wx:for="{{redEnvelopeList}}" wx:key="index" class="red-envelope-item">
+          <image class="red-envelope-img" src="/images/red_{{item.remainSeconds === 0 ? 'common' : 'disabled'}}.png" />
           <view 
             class="red-envelope-btn" 
-            wx:if="{{item.timLeft === 0}}"
-            data-id="{{item.id}}"
+            wx:if="{{item.remainSeconds === 0}}"
+            data-index="{{item.index}}"
             bindtap="openRedEnvelope"
           >拆开</view>
           <view class="red-countdown" wx:else>
             <view class="red-progress-wrap">
-              <view class="red-progress-bar" style="width: {{(redEnvelopeInterval - item.timLeft) * 100 / redEnvelopeInterval}}%" />
+              <view class="red-progress-bar" style="width: {{(redEnvelopeInterval - item.remainSeconds) * 100 / redEnvelopeInterval}}%" />
             </view>
             <view class="red-interval">{{item.timLeftStr}}</view>
           </view>
@@ -90,12 +91,12 @@
     <view class="envelope-content">
       <view wx:if="{{redEnvelope.type === 2}}" class="envelope-gold">
         <image class="envelope-gold-img" src="/images/gold_samall.png" />
-        <text class="envelope-gold-count">+{{redEnvelope.count}}</text>
+        <text class="envelope-gold-count">+{{redEnvelope.amount}}</text>
       </view>
       <block wx:else>
-        <view wx:if="{{redEnvelope.count > 100}}" class="envelope-cash">
+        <view wx:if="{{redEnvelope.count > 1}}" class="envelope-cash">
           <text class="cash-unit">￥</text>
-          <text class="cash-count">{{account.formatMoney(275)}}</text>
+          <text class="cash-count">1.2</text>
         </view>
         <view wx:else class="cash-tips">恭喜您</view>
       </block>
@@ -110,7 +111,7 @@
           <view class="ad-text">看视频领取</view>
         </block>
       </view>
-      <view class="accept-direct" bindtap="closeEnvelope">直接收下</view>
+      <view class="accept-direct" bindtap="acceptDirect">直接收下</view>
     </view>
   </view>
 </dialog>

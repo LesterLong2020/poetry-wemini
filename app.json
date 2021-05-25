@@ -2,8 +2,7 @@
   "pages":[
     "pages/answer/answer",
     "pages/task/task",
-    "pages/withdraw/withdraw",
-    "pages/logs/logs"
+    "pages/withdraw/withdraw"
   ],
   "window":{
     "backgroundTextStyle":"light",
@@ -39,6 +38,7 @@
   "style": "v2",
   "sitemapLocation": "sitemap.json",
   "useExtendedLib": {
+    "kbone": true,
     "weui": true
   }
 }

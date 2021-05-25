@@ -1,5 +1,10 @@
 // pages/anwser/anwser.js
-import questionList from "../../assets/questions";
+import { 
+  report, reportType,
+  queryAccountInfo, queryNextQuestion, submitAnswer, queryScheduleRedInfo, 
+  receiveScheduleRed, queryPassRedAmount, receivePassRed
+} from '../../utils/api';
+
 Page({
 
   /**
@@ -7,19 +12,18 @@ Page({
    */
   data: {
     accountInfo: {
-      gold: 1800000,
-      money: 18766
+      goldCoinCount: 0,
+      amount: 0
     },
-    questionTypes: ['成语填空', '诗词作者', '成语含义'],
-    questionDescs: ['空缺的字应为？', '此诗词的作者是？', '描述的成语是？'],
+    questionTypes: ['成语填空', '成语含义', '诗词作者'],
+    questionDescs: ['空缺的字应为？', '描述的成语是？', '此诗词的作者是？'],
     question: {},
-    questionIndex: 0,
     chooseAnswer: '',
     envelopeVisible: false,
     envelopeImgNames: ['tjhb', 'gghb', 'jbhb'],
     redEnvelope: {
       type: 1, // 0 天降红包 1 过关红包 2 金币红包
-      count: 190,
+      amount: 1.2,
     },
     timeLeft: 30,
     timeLeftStr: '',
@@ -31,7 +35,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    // const audioContext = wx.createInnerAudioContext();
+    // audioContext.src = '/audio/qnl.mp3';
+    // audioContext.loop = true;
+    // setTimeout(() => {
+    //   console.log('开始播放');
+    //   audioContext.play();
+    // }, 1000)
   },
 
   /**
@@ -45,12 +55,19 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    // report({
+    //   openId,
+    //   page: '答题',
+    //   type: reportType.page
+    // });
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
           selected: 0
       });
     }
-    this.getQuestion(0);
+    this.getAccountInfo();
+    // this.getScheduleRedInfo();
+    this.getQuestion();
     this.resetInterval();
   },
 
@@ -91,14 +108,25 @@ Page({
 
   /**
    * 获取问题
-   * @param {*} index 
    */
-  getQuestion(index) {
-    this.setData({
-      question: questionList[index],
-      questionIndex: index,
-      chooseAnswer: ''
-    })
+  async getQuestion() {
+    const res = await queryNextQuestion();
+    if (res) {
+      const { question, type, answer } = res;
+      this.setData({
+        question: res,
+        chooseAnswer: ''
+      })
+      if (type === 1) {
+        const anwserIndex = question.indexOf(answer);
+        this.setData({
+          question: {
+            ...res,
+            anwserIndex
+          }
+        })
+      }
+    }
   },
 
   /**
@@ -107,25 +135,41 @@ Page({
    */
   hanldeChooseAnswer(e) {
     const { answer } = e.currentTarget.dataset;
-    const { chooseAnswer, accountInfo } = this.data;
+    const { chooseAnswer, question: { answerId, anwserIndex, question, type } } = this.data;
     if (!chooseAnswer) {
-      console.log(answer)
       this.setData({
         chooseAnswer: answer
       });
+      let questionAnswer = answer;
+      if (type === 1) {
+        questionAnswer = question.slice(0, anwserIndex) + answer + question.slice(anwserIndex + 1);
+      }
+      this.answerQuestion(answerId, questionAnswer);
+    }
+  },
+
+  /**
+   * 提交问题答案
+   * @param {*} answerId 
+   * @param {*} answer 
+   */
+  async answerQuestion(answerId, answer) {
+    const res = await submitAnswer({ answerId, answer });
+    if (res) {
+      await this.getPassRedEnvelope();
       setTimeout(() => {
         this.setData({
-          redEnvelope: {
-            type: 2,
-            count: 1200
-          },
-          envelopeVisible: true,
-          accountInfo: {
-            ...accountInfo,
-            gold: 2000000
-          }
-        })
-      }, 1500)
+          envelopeVisible: true
+        });
+      }, 500)
+    } else {
+      wx.showToast({
+        title: '回答错误，要加油哦！',
+        icon: 'none'
+      });
+      setTimeout(() => {
+        this.refreshQuestion();
+      }, 1500);
     }
   },
 
@@ -141,29 +185,53 @@ Page({
   /**
    * 打开天降红包弹窗
    */
-  openEnvelopeModal() {
-    if (this.data.timeLeft === 0) {
-      this.setData({
-        envelopeVisible: true
-      })
-    }
+  async openEnvelopeModal() {
+    await this.getScheduleRedInfo();
+    this.setData({
+      envelopeVisible: true
+    })
   },
 
   /**
    * 收下红包
    */
   acceptEnvelope() {
-    const { questionIndex } = this.data;
+    const { redEnvelope: { type } } = this.data;
     this.setData({
       envelopeVisible: false
     });
-    this.getQuestion((questionIndex + 1) % 3);
-    this.animate('.content-wrap', [
-      { left: '100%' },
-      { left: 0 },
-      ], 300, () => {
-        this.clearAnimation('.content-wrap', () => {
-          console.log("清除了.content-wrap上的动画属性")
+    wx.showModal({
+      title: '看视频广告',
+      content: '广告内容',
+      success: (res) => {
+        if (res.confirm) {
+          console.log('用户点击确定');
+          if (type === 0) {
+            this.receiveScheduleRed();
+          } else {
+            this.reveivePassRedEnvelope();
+          }
+        } else if (res.cancel) {
+          console.log('用户点击取消');
+          if (type === 1) {
+            this.refreshQuestion();
+          }
+        }
+      }
+    })
+  },
+
+  /**
+   * 数额增加动画
+   */
+  amountAnimate() {
+    this.animate('#moneny-count', [
+      { scale: [1] },
+      { scale: [1.3] },
+      { scale: [1] },
+      ], 1000, () => {
+        this.clearAnimation('#moneny-count', () => {
+          console.log("清除了#moneny-countt上的动画属性")
         })
     });
     this.animate('#gold-count', [
@@ -172,7 +240,7 @@ Page({
       { scale: [1] },
       ], 1000, () => {
         this.clearAnimation('#gold-count', () => {
-          console.log("清除了#gold-countt上的动画属性")
+          console.log("清除了#gold-count上的动画属性")
         })
     })
   },
@@ -221,4 +289,87 @@ Page({
     return `${hour}:${minute}:${second}`;
   },
 
+  /**
+   * 获取账号信息
+   */
+  async getAccountInfo() {
+    const res = await queryAccountInfo();
+    if (res) {
+      this.setData({
+        accountInfo: res
+      });
+      this.amountAnimate();
+    }
+  },
+
+  /**
+   * 获取天降红包信息
+   */
+  async getScheduleRedInfo() {
+    const res = await queryScheduleRedInfo();
+    if (res) {
+      this.setData({
+        redEnvelope: {
+          amount: res,
+          type: 0
+        }
+      });
+    }
+  },
+
+  /**
+   * 领取天降红包
+   */
+  async receiveScheduleRed() {
+    const { redEnvelope: { amount } } = this.data;
+    const res = await receiveScheduleRed({ amount });
+    if (res) {
+      this.getAccountInfo();
+      await this.getScheduleRedInfo();
+      this.resetInterval();
+    }
+  },
+
+  /**
+   * 获取过关红包金额
+   */
+  async getPassRedEnvelope() {
+    const { question: { questionCount } } = this.data;
+    const res = await queryPassRedAmount({ level: questionCount });
+    if (res) {
+      this.setData({
+        redEnvelope: {
+          amount: res,
+          type: 1
+        }
+      });
+    }
+  },
+
+  /**
+   * 领取过关红包
+   */
+  async reveivePassRedEnvelope() {
+    const { question: { questionCount }, redEnvelope: { amount } } = this.data;
+    const res = await receivePassRed({ level: questionCount, amount });
+    this.refreshQuestion();
+    if (res) {
+      this.getAccountInfo();
+    }
+  },
+
+  /**
+   * 刷新下一个问题
+   */
+  refreshQuestion () {
+    this.getQuestion();
+    this.animate('.content-wrap', [
+      { left: '100%' },
+      { left: 0 },
+      ], 300, () => {
+        this.clearAnimation('.content-wrap', () => {
+          console.log("清除了.content-wrap上的动画属性")
+        })
+    });
+  }
 })

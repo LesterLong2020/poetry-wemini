@@ -19,11 +19,11 @@
     <view class="account-wrap">
       <view class="account-item">
         <image class="account-img" src="/images/money.png" />
-        <text id="moneny-count" class="account-text">{{account.formatMoney(accountInfo.money)}}</text>
+        <text id="moneny-count" class="account-text">{{accountInfo.amount}}</text>
       </view>
       <view class="account-item">
         <image class="account-img" src="/images/gold.png" />
-        <text id="gold-count" class="account-text">{{account.formatThousand(accountInfo.gold)}}</text>
+        <text id="gold-count" class="account-text">{{account.formatThousand(accountInfo.goldCoinCount)}}</text>
       </view>
     </view>
     <view class="envelope-wrap" bindtap="openEnvelopeModal">
@@ -35,30 +35,30 @@
     <view class="title-wrap">
       <image class="title-img" src="/images/content_header.png" />
       <view class="title-content">
-        <text class="title-text">第{{questionIndex + 1}}关</text>
-        <text class="title-text">{{questionTypes[question.type]}}</text>
+        <text class="title-text">第{{question.questionCount}}关</text>
+        <text class="title-text">{{questionTypes[question.type - 1]}}</text>
       </view>
     </view>
     <view class="question-wrap">
-      <view wx:if="{{question.type === 0}}" class="idiom-wrap">
+      <view wx:if="{{question.type === 1}}" class="idiom-wrap">
         <view 
-          class="idiom-item {{ question.answer === item ? 'idiom-answer' : '' }}" 
-          wx:for="{{question.questionTitle}}" 
+          class="idiom-item {{ question.anwserIndex === index ? 'idiom-answer' : '' }}" 
+          wx:for="{{question.question}}" 
           wx:key="*this"
         >
-          <block wx:if="{{question.answer === item}}">
+          <block wx:if="{{question.anwserIndex === index}}">
             {{!chooseAnswer ? '' : item}}
           </block>
           <block wx:else>{{item}}</block>
         </view>
       </view>
-      <view wx:else class="question-title">{{question.questionTitle}}</view>
+      <view wx:else class="question-title">{{question.question}}</view>
 
-      <view class="idiom-tips">{{questionDescs[question.type]}}</view>
+      <view class="idiom-tips">{{questionDescs[question.type - 1]}}</view>
         <view class="answer-list">
           <view 
             class="answer-item {{ chooseAnswer && item === question.answer ? 'answer-right' : '' }} {{ chooseAnswer && question.answer !== chooseAnswer && chooseAnswer === item ? 'answer-error' : ''}}" 
-            wx:for="{{question.answerList}}" 
+            wx:for="{{question.choices}}" 
             wx:key="*this"
             data-answer="{{item}}"
             bindtap="hanldeChooseAnswer"
@@ -91,9 +91,9 @@
         <text class="envelope-gold-count">+{{redEnvelope.count}}</text>
       </view>
       <block wx:else>
-        <view wx:if="{{redEnvelope.count > 100}}" class="envelope-cash">
+        <view wx:if="{{redEnvelope.amount > 1}}" class="envelope-cash">
           <text class="cash-unit">￥</text>
-          <text class="cash-count">{{account.formatMoney(redEnvelope.count)}}</text>
+          <text class="cash-count">{{redEnvelope.amount}}</text>
         </view>
         <view wx:else class="cash-tips">恭喜您</view>
       </block>

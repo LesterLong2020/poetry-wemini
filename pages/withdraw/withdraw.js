@@ -1,6 +1,9 @@
 // pages/withdraw/withdraw.js
-
-const app = getApp();
+import { 
+  report, reportType,
+  queryAccountInfo, 
+  queryClockInfo,
+} from '../../utils/api';
 
 Page({
 
@@ -8,7 +11,11 @@ Page({
    * 页面的初始数据
    */
   data: {
-    accountInfo: {},
+    openId: '',
+    accountInfo: {
+      goldCoinCount: 1800000,
+      amount: 187.66
+    },
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
@@ -32,18 +39,20 @@ Page({
       status: 0
     }],
     withdrawList: [{
-      count: 10000,
+      count: 100,
       status: 0,
     }, {
-      count: 20000,
+      count: 200,
       status: 0,
     }, {
-      count: 50000,
+      count: 500,
       status: 0,
     }],
     withdrawVisile: false,
     modalType: 0,
-    qrCodeUrl: ''
+    qrCodeUrl: '',
+    levelClearCount: 1, // 当日过关关数
+    expectedLevel: 10 // 打卡需要完成的关数
   },
 
   /**
@@ -68,14 +77,20 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    // const openId = wx.getStorageSync('openId');
+    // report({
+    //   openId,
+    //   page: '提现',
+    //   type: reportType.page
+    // });
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
           selected: 2
       });
-      this.setData({
-        accountInfo: app.globalData.accountInfo
-      })
     }
+
+    this.getAccountInfo();
+    this.getClockInfo();
   },
 
   /**
@@ -202,9 +217,9 @@ Page({
    */
   commonWithdraw(e) {
     const { amount } = e.currentTarget.dataset;
-    const { money } = this.data.accountInfo;
+    const { amount : userAmount } = this.data.accountInfo;
     wx.showToast({
-      title: money > amount ? '今日提现申请名额已满，请明日及时申请' : '现金账户余额不足',
+      title: userAmount > amount ? '今日提现申请名额已满，请明日及时申请' : '现金账户余额不足',
       icon: 'none'
     })
   },
@@ -231,5 +246,48 @@ Page({
       //   }
       // })
     }, 1000)
-  }
+  },
+
+  /**
+   * 获取账号信息
+   */
+  async getAccountInfo() {
+    const res = await queryAccountInfo();
+    if (res) {
+      this.setData({
+        accountInfo: res
+      });
+      this.amountAnimate('moneny-count');
+      this.amountAnimate('gold-count');
+    }
+  },
+
+  /**
+   * 数额增加动画
+   */
+  amountAnimate(domId) {
+    this.animate(`#${domId}`, [
+      { scale: [1] },
+      { scale: [1.3] },
+      { scale: [1] },
+      ], 1000, () => {
+        this.clearAnimation(`#${domId}`, () => {
+          console.log("清除了#domid上的动画属性")
+        })
+    });
+  },
+
+  /**
+   * 获取每日打卡信息
+   */
+  async getClockInfo() {
+    const res = await queryClockInfo();
+    if (res) {
+      const { levelClearCount, expectedLevel } = res;
+      this.setData({
+        levelClearCount,
+        expectedLevel
+      })
+    }
+  },
 })
