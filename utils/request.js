@@ -1,3 +1,5 @@
+import { login } from './util';
+
 /**
  * 网络请求
  * @param {*} url 
@@ -12,12 +14,12 @@ const request = (url, data, method = 'GET', config = {}) => {
       data,
       method,
       header: {
-        token: wx.getStorageSync('token') || 'token-'
+        'X-Token': wx.getStorageSync('token')
       },
       ...config,
       success(res) {
         if (res.data.code === 0) {
-          resolve(res.data.data);
+          resolve(res.data.data || (typeof res.data.data === 'boolean' ? res.data.data : {}));
         } else {
           wx.showToast({
             title: res.data.message,
@@ -32,9 +34,18 @@ const request = (url, data, method = 'GET', config = {}) => {
           icon: 'none'
         });
         resolve(null);
+      },
+      complete(res) {
+        reject(res);
+        if (res.data.code === -401) {
+          login();
+        }
       }
     })
   })
 }
+
+
+
 
 export default request;

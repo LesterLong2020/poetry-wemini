@@ -5,6 +5,8 @@ import {
   receiveScheduleRed, queryPassRedAmount, receivePassRed
 } from '../../utils/api';
 
+const app = getApp();
+
 Page({
 
   /**
@@ -23,7 +25,7 @@ Page({
     envelopeImgNames: ['tjhb', 'gghb', 'jbhb'],
     redEnvelope: {
       type: 1, // 0 天降红包 1 过关红包 2 金币红包
-      amount: 1.2,
+      amount: 0,
     },
     timeLeft: 30,
     timeLeftStr: '',
@@ -65,10 +67,21 @@ Page({
           selected: 0
       });
     }
-    this.getAccountInfo();
-    // this.getScheduleRedInfo();
-    this.getQuestion();
-    this.resetInterval();
+    const token = wx.getStorageSync('token');
+    if (token) {
+      this.getAccountInfo();
+      // this.getScheduleRedInfo();
+      this.getQuestion();
+      this.resetInterval();
+    } else {
+      app.loginCallBack = () => {
+        console.log('已登录')
+        this.getAccountInfo();
+        // this.getScheduleRedInfo();
+        this.getQuestion();
+        this.resetInterval();
+      }
+    }
   },
 
   /**
@@ -336,14 +349,12 @@ Page({
   async getPassRedEnvelope() {
     const { question: { questionCount } } = this.data;
     const res = await queryPassRedAmount({ level: questionCount });
-    if (res) {
-      this.setData({
-        redEnvelope: {
-          amount: res,
-          type: 1
-        }
-      });
-    }
+    this.setData({
+      redEnvelope: {
+        amount: res || 0,
+        type: 1
+      }
+    });
   },
 
   /**

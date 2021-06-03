@@ -1,9 +1,13 @@
 // pages/withdraw/withdraw.js
 import { 
+  apiPrefix,
   report, reportType,
   queryAccountInfo, 
   queryClockInfo,
+  saveQrCodeImg,
 } from '../../utils/api';
+
+const app = getApp();
 
 Page({
 
@@ -12,9 +16,10 @@ Page({
    */
   data: {
     openId: '',
+    isChooseImage: false,
     accountInfo: {
-      goldCoinCount: 1800000,
-      amount: 187.66
+      goldCoinCount: 0,
+      amount: 0
     },
     userInfo: {},
     hasUserInfo: false,
@@ -51,6 +56,7 @@ Page({
     withdrawVisile: false,
     modalType: 0,
     qrCodeUrl: '',
+    qrCodeImg: '',
     levelClearCount: 1, // 当日过关关数
     expectedLevel: 10 // 打卡需要完成的关数
   },
@@ -77,20 +83,31 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    const { isChooseImage } = this.data;
     // const openId = wx.getStorageSync('openId');
     // report({
     //   openId,
     //   page: '提现',
     //   type: reportType.page
     // });
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-          selected: 2
-      });
+    if (!isChooseImage) {
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        this.getTabBar().setData({
+            selected: 2
+        });
+      }
+      const token = wx.getStorageSync('token');
+      if (token) {
+         this.getAccountInfo();
+         this.getClockInfo();
+      } else {
+        app.loginCallBack = () => {
+          this.getAccountInfo();
+          this.getClockInfo();
+        }
+      }
+     
     }
-
-    this.getAccountInfo();
-    this.getClockInfo();
   },
 
   /**
@@ -190,22 +207,34 @@ Page({
    * 关闭弹窗
    */
   closeModal() {
+    const { accountInfo: { collectMoneyUrl }, modalType } = this.data;
     this.setData({
-      withdrawVisile: false,
+      withdrawVisile: false
     });
+    if (modalType !== 0) {
+      this.setData({
+        qrCodeUrl: '',
+        qrCodeImg: collectMoneyUrl
+      });
+    }
   },
 
   /**
    * 上传二维码图片
    */
   uploadImg() {
+    this.setData({
+      isChooseImage: true
+    });
     wx.chooseImage({
       count: 1,
       success: ({ tempFilePaths }) => {
         console.log(tempFilePaths);
         this.setData({
           modalType: 2,
-          qrCodeUrl: tempFilePaths[0]
+          qrCodeUrl: tempFilePaths[0],
+          qrCodeImg: tempFilePaths[0],
+          isChooseImage: false
         });
       },
     })
@@ -229,23 +258,63 @@ Page({
    */
   saveQrCode() {
     const { qrCodeUrl } = this.data;
+    if (!qrCodeUrl) {
+      return wx.showToast({
+        title: '请选择图片',
+        icon: 'none'
+      })
+    }
     wx.showToast({
       title: '上传中...',
       icon: 'loading',
-      mask: true
+      mask: true,
+      duration: 0
     });
-    setTimeout(() => {
-      wx.hideToast();
-      // wx.uploadFile({
-      //   url: 'https://example.weixin.qq.com/upload', //仅为示例，非真实的接口地址
-      //   filePath: qrCodeUrl,
-      //   name: 'file',
-      //   formData: {},
-      //   success (res){
-      //     console.log(res);
-      //   }
-      // })
-    }, 1000)
+    wx.uploadFile({
+      url: `${apiPrefix}/api/images/upload`,
+      filePath: qrCodeUrl,
+      name: 'file',
+      header: {
+        'X-Token': wx.getStorageSync('token')
+      },
+      formData: {},
+      success: ({ statusCode, data }) => {
+        console.log(statusCode, data, JSON.parse(data))
+        if (statusCode === 200) {
+          this.updateQrcodeImg(JSON.parse(data).data.filePath);
+        }
+        wx.hideToast();
+      },
+      fail: (err) => {
+        wx.hideToast();
+        wx.showToast({
+          title: JSON.stringify(err),
+          icon: 'error'
+        });
+      }
+    })
+  },
+
+  /**
+   * 更新收款二维码
+   * @param {*} filePath 
+   */
+  async updateQrcodeImg (filePath) {
+    const { accountInfo } = this.data;
+    this.setData({
+      accountInfo: {
+        ...accountInfo,
+        collectMoneyUrl: filePath
+      }
+    });
+    const res = await saveQrCodeImg({ filePath });
+    if (res) {
+      wx.showToast({
+        title: '保存成功',
+        icon: 'success'
+      });
+      this.closeModal();
+    }
   },
 
   /**
@@ -255,7 +324,8 @@ Page({
     const res = await queryAccountInfo();
     if (res) {
       this.setData({
-        accountInfo: res
+        accountInfo: res,
+        qrCodeImg: res.collectMoneyUrl
       });
       this.amountAnimate('moneny-count');
       this.amountAnimate('gold-count');

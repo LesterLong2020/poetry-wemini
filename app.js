@@ -1,25 +1,19 @@
 // app.js
-import { login } from "./utils/api";
+import { login } from "./utils/util";
 
 App({
   onLaunch() {
     // 展示本地存储能力
-    const logs = wx.getStorageSync('logs') || []
-    logs.unshift(Date.now())
-    wx.setStorageSync('logs', logs)
-
-    // 登录
-    wx.login({
-      success: res => {
-        console.log(res)
-        // this.login(res.code);
-        // 发送 res.code 到后台换取 openId, sessionKey, unionId
-      }
-    })
+    // const logs = wx.getStorageSync('logs') || []
+    // logs.unshift(Date.now())
+    // wx.setStorageSync('logs', logs)
   },
 
-  onShow() {
-    console.log('显示')
+  async onShow() {
+    console.log('显示');
+    await login();
+    console.log('登录完成');
+    this.loginCallBack && this.loginCallBack();
   },
 
   onHide() {
@@ -29,8 +23,4 @@ App({
   globalData: {
     userInfo: null
   },
-
-  async login(code) {
-    const res = await login({ code });
-  }
 })

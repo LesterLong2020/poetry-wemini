@@ -139,7 +139,7 @@
           好的
         </view>
       </block>
-      <block wx:elif="{{modalType === 1}}">
+      <block wx:elif="{{modalType === 1 && !accountInfo.collectMoneyUrl}}">
         <view class="modal-title">提现设置</view>
         <view class="modal-draw-tips">
           温馨提示：请上传您的<text class="qrcode-text">收款二维码</text>，
@@ -162,7 +162,7 @@
           温馨提示：请确保您上传的<text class="qrcode-text">收款二维码</text>
           无误，客服将通过该收款二维码给您打款
         </view>
-        <image class="qr-code-img" src="{{qrCodeUrl}}" />
+        <image class="qr-code-img" src="{{qrCodeImg}}" />
         <view class="save-btn" bindtap="saveQrCode">
           保存
         </view>

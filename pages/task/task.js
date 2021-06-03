@@ -8,6 +8,8 @@ import {
   queryRedWallList,
 } from '../../utils/api';
 
+const app = getApp();
+
 Page({
 
   /**
@@ -16,8 +18,8 @@ Page({
   data: {
     openId: '',
     accountInfo: {
-      goldCoinCount: 1800000,
-      amount: 187.66
+      goldCoinCount: 0,
+      amount: 0
     },
     tabList: ['每日任务', '红包墙'],
     tabIndex: 0,
@@ -69,10 +71,19 @@ Page({
           selected: 1
       });
     }
-    
-    // this.getAccountInfo();
-    this.getTaskList();
-    this.getRedWallList();
+
+    const token = wx.getStorageSync('token');
+    if (token) {
+      this.getAccountInfo();
+      this.getTaskList();
+      this.getRedWallList();
+    } else {
+      app.loginCallBack = () => {
+        this.getAccountInfo();
+        this.getTaskList();
+        this.getRedWallList();
+      }
+    }
   },
 
   /**
@@ -321,7 +332,7 @@ Page({
     const res = await queryRedWallList();
     if (res) {
       this.setData({
-        redEnvelopeList: res.list
+        redEnvelopeList: res
       });
       this.resetInterval();
     }

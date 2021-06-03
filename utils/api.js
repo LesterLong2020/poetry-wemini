@@ -1,15 +1,15 @@
 import request from "./request";
 
 // api前缀
-const apiPrefix = 'http://m.tonyou.vip';
+export const apiPrefix = 'https://www.tonyou.vip';
 
 // 数据上报指标类型
 export const reportType = {
-  page: 'sc1.0_page',
-  answer: 'sc1.0_answer',
-  popup: 'sc1.0_popup',
-  button: 'sc1.0_button',
-  advertising: 'sc1.0_incentive'
+  page: 'page',
+  answer: 'answer',
+  popup: 'popup',
+  button: 'button',
+  advertising: 'incentive'
 };
 
 /**
@@ -24,7 +24,7 @@ export function report(data) {
  * 登录
  * @param {*} data 
  */
-export function login(data) {
+export function loginForToken(data) {
   return request(`${apiPrefix}/api/wechat/login`, { ...data }, 'POST');
 }
 
@@ -125,4 +125,12 @@ export function queryRedWallList() {
  */
 export function receiveRedWall(data) {
   return request(`${apiPrefix}/api/reward/receive-rp-wall`, { ...data }, 'POST');
+}
+
+/**
+ * 更新收款二维码
+ * @param {*} data 
+ */
+export function saveQrCodeImg(data) {
+  return request(`${apiPrefix}/api/account/update-collect-money-picture`, { ...data }, 'POST');
 }
