@@ -190,9 +190,13 @@ Page({
    * 关闭红包弹窗
    */
   closeEnvelope() {
+    const { redEnvelope: { type } } = this.data;
     this.setData({
       envelopeVisible: false
     });
+    if ( type === 1 ) {
+      this.refreshQuestion();
+    }
   },
 
   /**

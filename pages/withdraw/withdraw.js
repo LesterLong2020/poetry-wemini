@@ -16,7 +16,6 @@ Page({
    */
   data: {
     openId: '',
-    isChooseImage: false,
     accountInfo: {
       goldCoinCount: 0,
       amount: 0
@@ -83,14 +82,13 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    const { isChooseImage } = this.data;
     // const openId = wx.getStorageSync('openId');
     // report({
     //   openId,
     //   page: '提现',
     //   type: reportType.page
     // });
-    if (!isChooseImage) {
+    if (this.getTabBar().data.selected !== 2) {
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
             selected: 2
@@ -223,9 +221,6 @@ Page({
    * 上传二维码图片
    */
   uploadImg() {
-    this.setData({
-      isChooseImage: true
-    });
     wx.chooseImage({
       count: 1,
       success: ({ tempFilePaths }) => {
@@ -233,8 +228,7 @@ Page({
         this.setData({
           modalType: 2,
           qrCodeUrl: tempFilePaths[0],
-          qrCodeImg: tempFilePaths[0],
-          isChooseImage: false
+          qrCodeImg: tempFilePaths[0]
         });
       },
     })
@@ -264,12 +258,6 @@ Page({
         icon: 'none'
       })
     }
-    wx.showToast({
-      title: '上传中...',
-      icon: 'loading',
-      mask: true,
-      duration: 0
-    });
     wx.uploadFile({
       url: `${apiPrefix}/api/images/upload`,
       filePath: qrCodeUrl,
@@ -279,11 +267,10 @@ Page({
       },
       formData: {},
       success: ({ statusCode, data }) => {
-        console.log(statusCode, data, JSON.parse(data))
+        console.log(statusCode, data, JSON.parse(data));
         if (statusCode === 200) {
           this.updateQrcodeImg(JSON.parse(data).data.filePath);
         }
-        wx.hideToast();
       },
       fail: (err) => {
         wx.hideToast();
