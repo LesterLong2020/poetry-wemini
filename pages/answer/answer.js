@@ -218,8 +218,8 @@ Page({
       envelopeVisible: false
     });
     wx.showModal({
-      title: '看视频广告',
-      content: '广告内容',
+      title: '提示',
+      content: '是否回答正确',
       success: (res) => {
         if (res.confirm) {
           console.log('用户点击确定');
