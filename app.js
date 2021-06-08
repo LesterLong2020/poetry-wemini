@@ -10,9 +10,7 @@ App({
   },
 
   async onShow() {
-    console.log('显示');
     await login();
-    console.log('登录完成');
     this.loginCallBack && this.loginCallBack();
   },
 

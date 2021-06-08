@@ -5,6 +5,8 @@ import {
   queryAccountInfo, 
   queryClockInfo,
   saveQrCodeImg,
+  goldToAmount,
+  clockWithdraw
 } from '../../utils/api';
 
 const app = getApp();
@@ -25,23 +27,7 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     canIUseGetUserProfile: false,
     canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName'), // 如需尝试获取用户信息
-    clockInTaskList: [{
-      day: 1,
-      count: 30,
-      status: 1
-    }, {
-      day: 5,
-      count: 100,
-      status: 0
-    }, {
-      day: 10,
-      count: 500,
-      status: 0
-    }, {
-      day: 20,
-      count: 1200,
-      status: 0
-    }],
+    clockInTaskList: [],
     withdrawList: [{
       count: 100,
       status: 0,
@@ -57,7 +43,8 @@ Page({
     qrCodeUrl: '',
     qrCodeImg: '',
     levelClearCount: 1, // 当日过关关数
-    expectedLevel: 10 // 打卡需要完成的关数
+    expectedLevel: 10, // 打卡需要完成的关数
+    keepClockDays: 0, // 已连续打卡天数
   },
 
   /**
@@ -98,10 +85,20 @@ Page({
       if (token) {
          this.getAccountInfo();
          this.getClockInfo();
+         report({
+          page: '提现',
+          subType: 'cash_out',
+          type: reportType.page
+        });
       } else {
         app.loginCallBack = () => {
           this.getAccountInfo();
           this.getClockInfo();
+          report({
+            page: '提现',
+            subType: 'cash_out',
+            type: reportType.page
+          });
         }
       }
      
@@ -176,11 +173,41 @@ Page({
    * 申请提现
    * @param {*} e 
    */
-  applyWithdraw(e) {
-    const { item } = e.currentTarget.dataset;
-    console.log(item);
-    if (item.status !== 1) {
-      this.showModal(0);
+  async applyWithdraw(e) {
+    const { item: { rewardQuantity, clockInTimes, status } } = e.currentTarget.dataset;
+    if (status === 1) {
+      try {
+        await clockWithdraw({ clockInTimes });
+        report({
+          subType: 'true_cash_out',
+          content: {
+            amount: rewardQuantity,
+            result: 'success'
+          },
+          type: reportType.button
+        });
+        this.showModal(0);
+        setTimeout(() => {
+          report({
+            subType: 'apply_success',
+            content:{
+              amount: rewardQuantity
+            },      
+            type: reportType.popup
+          });
+          this.getClockInfo();
+        }, 300)
+      } catch (err) {
+        console.warn(err);
+        report({
+          subType: 'true_cash_out',
+          content: {
+            amount: rewardQuantity,
+            result: 'fail'
+          },
+          type: reportType.button
+        });
+      }
     }
   },
 
@@ -188,7 +215,18 @@ Page({
    * 显示提现设置弹窗
    */
   openSetModal() {
+    const { accountInfo: { collectMoneyUrl } } = this.data;
     this.showModal(1);
+    report({
+      subType: 'cash_out_setup',
+      type: reportType.button
+    });
+    setTimeout(() => {
+      report({
+        subType: collectMoneyUrl ? 'setup_exist' : 'setup_vacant',   
+        type: reportType.popup
+      });
+    }, 300)
   },
 
   /**
@@ -244,7 +282,15 @@ Page({
     wx.showToast({
       title: userAmount > amount ? '今日提现申请名额已满，请明日及时申请' : '现金账户余额不足',
       icon: 'none'
-    })
+    });
+    report({
+      subType: 'false_cash_out',
+      content: {
+        amount: userAmount,
+        result:  userAmount > amount ? 'success' : 'fail'
+      },
+      type: reportType.button
+    });
   },
 
   /**
@@ -340,11 +386,43 @@ Page({
   async getClockInfo() {
     const res = await queryClockInfo();
     if (res) {
-      const { levelClearCount, expectedLevel } = res;
+      const { levelClearCount, expectedLevel, keepClockDays, clockInRewards } = res;
       this.setData({
         levelClearCount,
-        expectedLevel
+        expectedLevel,
+        keepClockDays,
+        clockInTaskList: clockInRewards
       })
     }
   },
+
+  /**
+   * 兑换现金
+   */
+  exchangeCash() {
+    report({
+      subType: 'change',
+      type: reportType.button
+    });
+    const { accountInfo: { goldCoinCount } } = this.data;
+    wx.showModal({
+      title: '提示',
+      content: `可以兑换现金：${(goldCoinCount/100000).toFixed(2)}元`,
+      success: async (res) => {
+        if (res.confirm) {
+          console.log('用户点击确定');
+          const res = await goldToAmount();
+          if (res) {
+            wx.showToast({
+              title: '兑换成功！',
+              icon: 'success'
+            });
+            this.getAccountInfo();
+          }
+        } else if (res.cancel) {
+          console.log('用户点击取消');
+        }
+      }
+    })
+  }
 })

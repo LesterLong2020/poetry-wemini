@@ -2,7 +2,7 @@
 import { 
   report, reportType,
   queryAccountInfo, queryNextQuestion, submitAnswer, queryScheduleRedInfo, 
-  receiveScheduleRed, queryPassRedAmount, receivePassRed
+  receiveScheduleRed, queryPassRedAmount, receivePassRed, queryIsShow
 } from '../../utils/api';
 
 const app = getApp();
@@ -13,6 +13,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    isShow: false,
     accountInfo: {
       goldCoinCount: 0,
       amount: 0
@@ -27,7 +28,7 @@ Page({
       type: 1, // 0 天降红包 1 过关红包 2 金币红包
       amount: 0,
     },
-    timeLeft: 30,
+    timeLeft: 0,
     timeLeftStr: '',
   },
 
@@ -37,6 +38,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    this.getIsShow();
     // const audioContext = wx.createInnerAudioContext();
     // audioContext.src = '/audio/qnl.mp3';
     // audioContext.loop = true;
@@ -57,11 +59,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    // report({
-    //   openId,
-    //   page: '答题',
-    //   type: reportType.page
-    // });
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
           selected: 0
@@ -70,16 +67,24 @@ Page({
     const token = wx.getStorageSync('token');
     if (token) {
       this.getAccountInfo();
-      // this.getScheduleRedInfo();
+      this.getScheduleRedInfo();
       this.getQuestion();
-      this.resetInterval();
+      report({
+        page: '答题',
+        subType: 'answer',
+        type: reportType.page
+      });
     } else {
       app.loginCallBack = () => {
         console.log('已登录')
         this.getAccountInfo();
-        // this.getScheduleRedInfo();
+        this.getScheduleRedInfo();
         this.getQuestion();
-        this.resetInterval();
+        report({
+          page: '答题',
+          subType: 'answer',
+          type: reportType.page
+        });
       }
     }
   },
@@ -117,6 +122,16 @@ Page({
    */
   onShareAppMessage: function () {
 
+  },
+
+  /**
+   * 查询是否显示
+   */
+  async getIsShow() {
+    const res = await queryIsShow();
+    this.setData({
+      isShow: res
+    })
   },
 
   /**
@@ -167,15 +182,38 @@ Page({
    * @param {*} answer 
    */
   async answerQuestion(answerId, answer) {
+    const { isShow } = this.data;
     const res = await submitAnswer({ answerId, answer });
     if (res) {
-      await this.getPassRedEnvelope();
-      setTimeout(() => {
-        this.setData({
-          envelopeVisible: true
+      report({
+        subType: 'right',
+        type: reportType.answer
+      });
+      if (isShow) {
+        await this.getPassRedEnvelope();
+        setTimeout(() => {
+          this.setData({
+            envelopeVisible: true
+          });
+          report({
+            subType: 'pass_envelop',
+            type: reportType.popup
+          });
+        }, 500)
+      } else {
+        wx.showToast({
+          title: '回答正确！',
+          icon: 'success'
         });
-      }, 500)
+        setTimeout(() => {
+          this.refreshQuestion();
+        }, 1500);
+      }
     } else {
+      report({
+        subType: 'wrong',
+        type: reportType.answer
+      });
       wx.showToast({
         title: '回答错误，要加油哦！',
         icon: 'none'
@@ -206,7 +244,11 @@ Page({
     await this.getScheduleRedInfo();
     this.setData({
       envelopeVisible: true
-    })
+    });
+    report({
+      subType: 'skyfall_envelop',
+      type: reportType.popup
+    });
   },
 
   /**
@@ -217,25 +259,37 @@ Page({
     this.setData({
       envelopeVisible: false
     });
-    wx.showModal({
-      title: '提示',
-      content: '是否回答正确',
-      success: (res) => {
-        if (res.confirm) {
-          console.log('用户点击确定');
-          if (type === 0) {
-            this.receiveScheduleRed();
-          } else {
+    if (type === 0) { 
+      this.receiveScheduleRed();
+    } else {
+      wx.showModal({
+        title: '提示',
+        content: '是否回答正确',
+        success: (res) => {
+          if (res.confirm) {
+            console.log('用户点击确定');
             this.reveivePassRedEnvelope();
-          }
-        } else if (res.cancel) {
-          console.log('用户点击取消');
-          if (type === 1) {
+            report({
+              subType: 'pass_envelop',
+              content: {
+                result: 'complete'
+              },
+              type: reportType.incentive
+            });
+          } else if (res.cancel) {
+            console.log('用户点击取消');
             this.refreshQuestion();
+            report({
+              subType: 'pass_envelop',
+              content: {
+                result: 'uncomplete'
+              },
+              type: reportType.incentive
+            });
           }
         }
-      }
-    })
+      })
+    }
   },
 
   /**
@@ -327,11 +381,14 @@ Page({
     if (res) {
       this.setData({
         redEnvelope: {
-          amount: res,
+          amount: res.value,
           type: 0
-        }
+        },
+        timeLeft: res.remainSeconds
       });
+      this.resetInterval();
     }
+    return res;
   },
 
   /**
@@ -342,8 +399,7 @@ Page({
     const res = await receiveScheduleRed({ amount });
     if (res) {
       this.getAccountInfo();
-      await this.getScheduleRedInfo();
-      this.resetInterval();
+      this.getScheduleRedInfo();
     }
   },
 
@@ -359,6 +415,7 @@ Page({
         type: 1
       }
     });
+    return res;
   },
 
   /**

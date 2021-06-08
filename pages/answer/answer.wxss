@@ -339,6 +339,9 @@ page {
 .envelope-content .accept-btn {
   margin: 235rpx auto 0;
   padding: 26rpx 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   width: 440rpx;
   height: 120rpx;
   background: linear-gradient(180deg, #FFEED3 0%, #FFCE7E 100%);

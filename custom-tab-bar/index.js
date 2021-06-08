@@ -1,4 +1,6 @@
 // custom-tab-bar/index.js
+import { queryIsShow } from '../utils/api'
+
 Component({
   /**
    * 组件的属性列表
@@ -11,6 +13,7 @@ Component({
    * 组件的初始数据
    */
   data: {
+    isShow: false,
     selected: 0,
     color: "#7A7E83",
     selectedColor: "#D81E06",
@@ -35,7 +38,8 @@ Component({
   },
 
   attached() {
-
+    console.log(123);
+    this.getIsShow();
   },
 
   /**
@@ -49,6 +53,16 @@ Component({
       this.setData({
         selected: data.index
       })
-    }
+    },
+
+    /**
+    * 查询是否显示
+    */
+    async getIsShow() {
+      const res = await queryIsShow();
+      this.setData({
+        isShow: res
+      })
+    },
   }
 })

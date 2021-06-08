@@ -9,7 +9,7 @@ export const reportType = {
   answer: 'answer',
   popup: 'popup',
   button: 'button',
-  advertising: 'incentive'
+  incentive: 'incentive'
 };
 
 /**
@@ -17,7 +17,8 @@ export const reportType = {
  * @param {*} data 
  */
 export function report(data) {
-  return request(`${apiPrefix}/api/report/point`, { ...data }, 'POST');
+  const clientTs = parseInt(Date.now() / 1000);
+  return request(`${apiPrefix}/api/report/point`, { ...data, clientTs }, 'POST');
 }
 
 /**
@@ -75,10 +76,10 @@ export function queryClockInfo() {
 
 /**
  * 兑换金币成余额
- * @param {*} data 
+ * @param {*} 
  */
-export function goldToAmount(data) {
-  return request(`${apiPrefix}/api/account/exchange-gold-coin`, { ...data }, 'POST');
+export function goldToAmount() {
+  return request(`${apiPrefix}/api/account/exchange-gold-coin`, {}, 'POST');
 }
 
 /**
@@ -133,4 +134,26 @@ export function receiveRedWall(data) {
  */
 export function saveQrCodeImg(data) {
   return request(`${apiPrefix}/api/account/update-collect-money-picture`, { ...data }, 'POST');
+}
+
+/**
+ * 打卡提现申请
+ * @param {*} data 
+ */
+export function clockWithdraw(data) {
+  return request(`${apiPrefix}/api/reward/clock-in-withdraw`, { ...data }, 'POST');
+}
+
+/**
+ * 查询红包墙红包金币数
+ */
+export function queryRedWallAmount() {
+  return request(`${apiPrefix}/api/reward/get-rp-wall-gold-coin`);
+}
+
+/**
+ * 查询是否显示
+ */
+export function queryIsShow() {
+  return request(`${apiPrefix}/api/wechat/check-version`, { version: '1.0.2' });
 }

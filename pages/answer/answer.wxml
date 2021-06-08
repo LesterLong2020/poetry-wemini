@@ -12,10 +12,10 @@
   module.exports.formatThousand = formatThousand;
 </wxs>
 
-<navigation title="答题拆红包" show-back="{{false}}" show-home="{{false}}" />
+<navigation title="{{isShow ? '答题拆红包' : '诗词猜猜'}}" show-back="{{false}}" show-home="{{false}}" />
 <view class="container">
   <image class="bg-img" src="/images/index_bg.png" />
-  <view class="header-wrap">
+  <view wx:if="{{isShow}}" class="header-wrap">
     <view class="account-wrap">
       <view class="account-item">
         <image class="account-img" src="/images/money.png" />
@@ -100,7 +100,7 @@
       <view class="envelope-tips">获得一个{{redEnvelope.type === 2 ? '金币' : '现金'}}红包</view>
       <view class="accept-btn" bindtap="acceptEnvelope">
         <view class="accept-text">收下</view>
-        <view class="ad-text">看视频领取</view>
+        <view wx:if="{{redEnvelope.type !== 0}}" class="ad-text">看视频领取</view>
       </view>
     </view>
   </view>

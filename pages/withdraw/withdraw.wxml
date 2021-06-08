@@ -55,40 +55,42 @@
             <view id="gold-count" class="account-desc">金币账户</view>
           </view>
         </view>
-        <image class="account-img" src="/images/exchange.png" />
+        <image class="account-img" src="/images/exchange.png" bindtap="exchangeCash" />
       </view>
       <view class="module-wrap">
         <view class="module-title">
           <text class="title-text">打卡提现</text>
-          <view class="clock-in-desc">已连打<text class="clock-in-count">5</text>天</view>
+          <view class="clock-in-desc">已连打<text class="clock-in-count">{{keepClockDays}}</text>天</view>
         </view>
         <view class="day-wrap">
           <view class="progress-outter">
-            <view style="width: {{levelClearCount*100/expectedLevel}}%" class="progress-inner" />
+            <view wx:if="{{expectedLevel <= levelClearCount}}"  style="width: 100%" class="progress-inner" />
+            <view wx:else style="width: {{levelClearCount*100/expectedLevel}}%" class="progress-inner" />
           </view>
           <view class="day-tip-wrap">
-            <text>再领{{expectedLevel - levelClearCount}}个过关红包完成今日打卡</text>
+            <text wx:if="{{expectedLevel <= levelClearCount}}">已完成今日打卡</text>
+            <text wx:else>再领{{expectedLevel - levelClearCount  }}个过关红包完成今日打卡</text>
             <text>{{levelClearCount}}/{{expectedLevel}}</text>
           </view>
         </view>
         <view class="clock-task-list">
           <view
             wx:for="{{clockInTaskList}}" 
-            wx:key="day" 
-            class="clock-task-item {{item.status === 1 ? 'has-received' : ''}}"
+            wx:key="clockInTimes" 
+            class="clock-task-item {{item.status !== 1 ? 'has-received' : ''}}"
             data-item="{{item}}"
             bindtap="applyWithdraw"
            >
-            <image class="clock-bg-img" src="/images/day_clockin_bg{{item.status === 1 ? '_gray' : ''}}.png" />
+            <image class="clock-bg-img" src="/images/day_clockin_bg{{item.status === 1 ? '' : '_gray'}}.png" />
             <view class="clock-task-left">
               <view class="clock-count-wrap">
-                <text class="clock-count-text">{{account.formatMoney(item.count)}}</text>
+                <text class="clock-count-text">{{item.rewardQuantity}}</text>
                 <text class="clock-count-unit">元</text>
               </view>
-              <view class="clock-day-desc">已连打<text class="clock-day-count">5</text>天</view>
+              <view class="clock-day-desc">已连打<text class="clock-day-count">{{item.clockInTimes}}</text>天</view>
             </view>
             <view class="clock-task-right">
-              <image class="clock-right-img" src="/images/right_{{item.status === 1 ? 'gray' : 'red'}}.png" />
+              <image class="clock-right-img" src="/images/right_{{item.status === 1 ? 'red' : 'gray'}}.png" />
             </view>
           </view>
         </view>

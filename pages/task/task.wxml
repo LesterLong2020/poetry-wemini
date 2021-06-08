@@ -103,15 +103,18 @@
       <view class="envelope-tips">获得一个{{redEnvelope.type === 2 ? '金币' : '现金'}}红包</view>
       <view class="accept-btn" bindtap="acceptEnvelope">
         <view wx:if="{{redEnvelope.type === 2}}" class="accept-video-wrap">
+          <text wx:if="{{rewardInfo.type === 0}}">收下</text>
+          <block wx:else>
             <image class="accept-video-img" src="/images/video_icon.png" />
             <text>看视频奖励翻50倍</text>
-          </view>
+          </block>
+        </view>
         <block wx:else>
           <view class="accept-text">收下</view>
           <view class="ad-text">看视频领取</view>
         </block>
       </view>
-      <view class="accept-direct" bindtap="acceptDirect">直接收下</view>
+      <view wx:if="{{rewardInfo.type !== 0}}" class="accept-direct" bindtap="acceptDirect">直接收下</view>
     </view>
   </view>
 </dialog>

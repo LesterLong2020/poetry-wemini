@@ -20,7 +20,6 @@ export const login = () => {
   return new Promise((resolve, reject) => {
     wx.login({
       success: async ({ code }) => {
-        console.log(code)
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
         const res = await loginForToken({ code });
         if (res) {

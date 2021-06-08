@@ -6,6 +6,7 @@ import {
   receiveDailyReward,
   receiveRedWall,
   queryRedWallList,
+  queryRedWallAmount,
 } from '../../utils/api';
 
 const app = getApp();
@@ -77,11 +78,21 @@ Page({
       this.getAccountInfo();
       this.getTaskList();
       this.getRedWallList();
+      report({
+        page: '任务',
+        subType: 'task',
+        type: reportType.page
+      });
     } else {
       app.loginCallBack = () => {
         this.getAccountInfo();
         this.getTaskList();
         this.getRedWallList();
+        report({
+          page: '任务',
+          subType: 'task',
+          type: reportType.page
+        });
       }
     }
   },
@@ -150,6 +161,19 @@ Page({
         rewardId
       }
     });
+    report({
+      subType: 'get',
+      content: {
+        amount
+      },
+      type: reportType.button
+    });
+    setTimeout(() => {
+      report({
+        subType: 'goldcoin_envelop',
+        type: reportType.popup
+      });
+    }, 300)
   },
 
   /**
@@ -213,19 +237,24 @@ Page({
    * 拆开红包
    * @param {*} e 
    */
-  openRedEnvelope(e) {
+  async openRedEnvelope(e) {
     const { index } = e.currentTarget.dataset;
     const { redEnvelope } = this.data;
+    const res = await queryRedWallAmount();
     this.setData({
       envelopeVisible: true,
       redEnvelope: {
         ...redEnvelope,
-        amount: 20000
+        amount: res || 0
       },
       rewardInfo: {
         type: 1,
         index
       }
+    });
+    report({
+      subType: 'goldcoin_envelop',
+      type: reportType.popup
     });
   },
 
@@ -242,9 +271,9 @@ Page({
    * 领取红包
    * @param {*} hasAd 
    */
-  async receiveEnvelope(hasAd = false) {
-    const { rewardInfo: { type, rewardId, index } } = this.data;
-    const param = type === 0 ? { rewardId } : { index };
+  async receiveEnvelope(finishedAd = false) {
+    const { rewardInfo: { type, rewardId, index }, redEnvelope: { amount } } = this.data;
+    const param = type === 0 ? { rewardId } : { index, finishedAd, amount };
     const apiFc = type === 0 ? receiveDailyReward : receiveRedWall;
     const res = await apiFc(param);
     if (res) {
@@ -269,19 +298,38 @@ Page({
    * 看视频收下红包
    */
   acceptEnvelope() {
-    wx.showModal({
-      title: '看视频广告',
-      content: '广告内容',
-      success: (res) => {
-        if (res.confirm) {
-          console.log('用户点击确定');
-          this.receiveEnvelope(true);
-        } else if (res.cancel) {
-          console.log('用户点击取消');
-          this.receiveEnvelope(false);
+    const { rewardInfo: { type } } = this.data;
+    if (type === 1) {
+      wx.showModal({
+        title: '看视频广告',
+        content: '广告内容',
+        success: (res) => {
+          if (res.confirm) {
+            console.log('用户点击确定');
+            this.receiveEnvelope(true);
+            report({
+              subType: 'goldcoin_envelop',
+              content: {
+                result: 'complete'
+              },
+              type: reportType.incentive
+            });
+          } else if (res.cancel) {
+            console.log('用户点击取消');
+            this.receiveEnvelope(false);
+            report({
+              subType: 'goldcoin_envelop',
+              content: {
+                result: 'uncomplete'
+              },
+              type: reportType.incentive
+            });
+          }
         }
-      }
-    })
+      })
+    } else {
+      this.receiveEnvelope(false);
+    }
   },
 
   /**

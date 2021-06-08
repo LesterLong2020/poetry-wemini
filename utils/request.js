@@ -19,13 +19,13 @@ const request = (url, data, method = 'GET', config = {}) => {
       ...config,
       success(res) {
         if (res.data.code === 0) {
-          resolve(res.data.data || (typeof res.data.data === 'boolean' ? res.data.data : {}));
+          resolve(res.data.data);
         } else {
           wx.showToast({
             title: res.data.message,
             icon: 'none'
           });
-          resolve(null);
+          reject(res.data.message);
         }
       },
       fail(err) {
@@ -33,7 +33,7 @@ const request = (url, data, method = 'GET', config = {}) => {
           title: JSON.stringify(err),
           icon: 'none'
         });
-        resolve(null);
+        reject(err);
       },
       complete(res) {
         reject(res);
