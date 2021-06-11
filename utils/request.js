@@ -19,7 +19,7 @@ const request = (url, data, method = 'GET', config = {}) => {
       ...config,
       success(res) {
         if (res.data.code === 0) {
-          resolve(res.data.data);
+          resolve(res.data.data || (typeof res.data.data === 'boolean' ? res.data.data : {}));
         } else {
           wx.showToast({
             title: res.data.message,
