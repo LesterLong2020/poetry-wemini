@@ -7,6 +7,7 @@ import {
   receiveRedWall,
   queryRedWallList,
   queryRedWallAmount,
+  queryIsShow,
 } from '../../utils/api';
 
 const app = getApp();
@@ -17,7 +18,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    openId: '',
+    isShow: false,
     accountInfo: {
       goldCoinCount: 0,
       amount: 0
@@ -47,7 +48,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    this.getIsShow();
   },
 
   /**
@@ -61,12 +62,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    // const openId = wx.getStorageSync('openId');
-    // report({
-    //   openId,
-    //   page: '任务',
-    //   type: reportType.page
-    // });
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
           selected: 1
@@ -262,8 +257,16 @@ Page({
    * 关闭红包弹窗
    */
   closeEnvelope() {
-    this.setData({
-      envelopeVisible: false
+    wx.showModal({
+      title: '提示',
+      content: '确认是否关闭？若选择确定关闭，则无法获得奖励',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({
+            envelopeVisible: false
+          })
+        }
+      }
     })
   },
   
@@ -279,7 +282,9 @@ Page({
     if (res) {
       this.getAccountInfo();
     }
-    this.closeEnvelope();
+    this.setData({
+      envelopeVisible: false
+    });
     if (type === 0) {
       this.getTaskList();
     } else {
@@ -384,5 +389,15 @@ Page({
       });
       this.resetInterval();
     }
-  }
+  },
+
+  /**
+   * 查询是否显示
+   */
+  async getIsShow() {
+    const res = await queryIsShow();
+    this.setData({
+      isShow: res
+    })
+  },
 })

@@ -12,120 +12,145 @@
   module.exports.formatThousand = formatThousand;
 </wxs>
 
-<navigation title="提现" show-back="{{false}}" show-home="{{false}}" />
-<view class="container">
-  <view class="scroll-wrap">
-    <image class="bg-img" src="/images/index_bg.png" />
-    <view class="content-wrap">
-      <view class="user-wrap">
-      <view class="user-info">
-        <block wx:if="{{canIUseOpenData}}" calss="userinfo-opendata">
-          <view class="user-avatar">
-            <open-data type="userAvatarUrl" />
-          </view>
-          <open-data class="user-name" type="userNickName" />
-        </block>
-        <block wx:elif="{{!hasUserInfo}}">
-          <button wx:if="{{canIUseGetUserProfile}}" class="avatar-btn"  bindtap="getUserProfile">
-            <image class="user-avatar" src="/images/avatar.png" />
-            <text class="user-name">立即登录</text>
-          </button>
-          <button wx:elif="{{canIUse}}" class="avatar-btn" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
-            <image class="user-avatar" src="/images/avatar.png" /> 
-            <text class="user-name">立即登录</text>
-          </button>
-          <image wx:else class="user-avatar" src="/images/avatar.png" /> 
-          <!-- <view wx:else class="user-name"> 请使用1.4.4及以上版本基础库以获取用户信息 </view> -->
-        </block>
-        <block wx:else>
-          <image class="user-avatar" src="{{userInfo.avatarUrl}}" mode="cover" />
-          <text class="user-name">{{userInfo.nickName}}</text>
-        </block>
-      </view>
-      <image class="set-img" src="/images/set.png" bindtap="openSetModal" />
-      </view>
-      <view class="account-wrap">
-        <view class="account-left">
-          <view class="account-item">
-            <view id="moneny-count" class="account-count" >{{accountInfo.amount}}</view>
-            <view class="account-desc">现金账户(元)</view>
-          </view>
-          <view class="account-item">
-            <view class="account-count">{{account.formatThousand(accountInfo.goldCoinCount)}}</view>
-            <view id="gold-count" class="account-desc">金币账户</view>
-          </view>
+<view wx:if="{{!isShow}}" class="default-poetry">
+  噫吁嚱，危乎高哉！蜀道之难，难于上青天！
+  蚕丛及鱼凫，开国何茫然！
+  尔来四万八千岁，不与秦塞通人烟。
+  西当太白有鸟道，可以横绝峨眉巅。
+  地崩山摧壮士死，然后天梯石栈相钩连。
+  上有六龙回日之高标，下有冲波逆折之回川。
+  黄鹤之飞尚不得过，猿猱欲度愁攀援。
+  青泥何盘盘，百步九折萦岩峦。
+  扪参历井仰胁息，以手抚膺坐长叹。
+  问君西游何时还？畏途巉岩不可攀。
+  但见悲鸟号古木，雄飞雌从绕林间。
+  又闻子规啼夜月，愁空山。
+  蜀道之难,难于上青天，使人听此凋朱颜！
+  连峰去天不盈尺，枯松倒挂倚绝壁。
+  飞湍瀑流争喧豗，砯崖转石万壑雷。
+  其险也如此，嗟尔远道之人胡为乎来哉！
+  剑阁峥嵘而崔嵬，一夫当关，万夫莫开。
+  所守或匪亲，化为狼与豺。
+  朝避猛虎，夕避长蛇；磨牙吮血，杀人如麻。
+  锦城虽云乐，不如早还家。
+  蜀道之难,难于上青天，侧身西望长咨嗟！
+</view>
+<block wx:else>
+  <navigation title="提现" show-back="{{false}}" show-home="{{false}}" />
+  <view class="container">
+    <view class="scroll-wrap">
+      <image class="bg-img" src="/images/index_bg.png" />
+      <view class="content-wrap">
+        <view class="user-wrap">
+        <view class="user-info">
+          <block wx:if="{{canIUseOpenData}}" calss="userinfo-opendata">
+            <view class="user-avatar">
+              <open-data type="userAvatarUrl" />
+            </view>
+            <open-data class="user-name" type="userNickName" />
+          </block>
+          <block wx:elif="{{!hasUserInfo}}">
+            <button wx:if="{{canIUseGetUserProfile}}" class="avatar-btn"  bindtap="getUserProfile">
+              <image class="user-avatar" src="/images/avatar.png" />
+              <text class="user-name">立即登录</text>
+            </button>
+            <button wx:elif="{{canIUse}}" class="avatar-btn" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+              <image class="user-avatar" src="/images/avatar.png" /> 
+              <text class="user-name">立即登录</text>
+            </button>
+            <image wx:else class="user-avatar" src="/images/avatar.png" /> 
+            <!-- <view wx:else class="user-name"> 请使用1.4.4及以上版本基础库以获取用户信息 </view> -->
+          </block>
+          <block wx:else>
+            <image class="user-avatar" src="{{userInfo.avatarUrl}}" mode="cover" />
+            <text class="user-name">{{userInfo.nickName}}</text>
+          </block>
         </view>
-        <image class="account-img" src="/images/exchange.png" bindtap="exchangeCash" />
-      </view>
-      <view class="module-wrap">
-        <view class="module-title">
-          <text class="title-text">打卡提现</text>
-          <view class="clock-in-desc">已连打<text class="clock-in-count">{{keepClockDays}}</text>天</view>
+        <image class="set-img" src="/images/set.png" bindtap="openSetModal" />
         </view>
-        <view class="day-wrap">
-          <view class="progress-outter">
-            <view wx:if="{{expectedLevel <= levelClearCount}}"  style="width: 100%" class="progress-inner" />
-            <view wx:else style="width: {{levelClearCount*100/expectedLevel}}%" class="progress-inner" />
+        <view class="account-wrap">
+          <view class="account-left">
+            <view class="account-item">
+              <view id="moneny-count" class="account-count" >{{accountInfo.amount}}</view>
+              <view class="account-desc">现金账户(元)</view>
+            </view>
+            <view class="account-item">
+              <view class="account-count">{{account.formatThousand(accountInfo.goldCoinCount)}}</view>
+              <view id="gold-count" class="account-desc">金币账户</view>
+            </view>
           </view>
-          <view class="day-tip-wrap">
-            <text wx:if="{{expectedLevel <= levelClearCount}}">已完成今日打卡</text>
-            <text wx:else>再领{{expectedLevel - levelClearCount  }}个过关红包完成今日打卡</text>
-            <text>{{levelClearCount}}/{{expectedLevel}}</text>
-          </view>
+          <image class="account-img" src="/images/exchange.png" bindtap="exchangeCash" />
         </view>
-        <view class="clock-task-list">
-          <view
-            wx:for="{{clockInTaskList}}" 
-            wx:key="clockInTimes" 
-            class="clock-task-item {{item.status !== 1 ? 'has-received' : ''}}"
-            data-item="{{item}}"
-            bindtap="applyWithdraw"
-           >
-            <image class="clock-bg-img" src="/images/day_clockin_bg{{item.status === 1 ? '' : '_gray'}}.png" />
-            <view class="clock-task-left">
-              <view class="clock-count-wrap">
-                <text class="clock-count-text">{{item.rewardQuantity}}</text>
-                <text class="clock-count-unit">元</text>
+        <view class="module-wrap">
+          <view class="module-title">
+            <text class="title-text">打卡提现</text>
+            <view class="clock-in-desc">已连打<text class="clock-in-count">{{keepClockDays}}</text>天</view>
+          </view>
+          <view class="day-wrap">
+            <view class="progress-outter">
+              <view wx:if="{{expectedLevel <= levelClearCount}}"  style="width: 100%" class="progress-inner" />
+              <view wx:else style="width: {{levelClearCount*100/expectedLevel}}%" class="progress-inner" />
+            </view>
+            <view class="day-tip-wrap">
+              <text wx:if="{{expectedLevel <= levelClearCount}}">已完成今日打卡</text>
+              <text wx:else>再领{{expectedLevel - levelClearCount  }}个过关红包完成今日打卡</text>
+              <text>{{levelClearCount}}/{{expectedLevel}}</text>
+            </view>
+          </view>
+          <view class="clock-task-list">
+            <view
+              wx:for="{{clockInTaskList}}" 
+              wx:key="clockInTimes" 
+              class="clock-task-item {{item.status === 2 || item.status == 3 ? 'has-received' : ''}}"
+              data-item="{{item}}"
+              bindtap="applyWithdraw"
+            >
+              <image class="clock-bg-img" src="/images/day_clockin_bg{{item.status === 0 || item.status === 1 ? '' : '_gray'}}.png" />
+              <view class="clock-task-left">
+                <view class="clock-count-wrap">
+                  <text class="clock-count-text">{{item.rewardQuantity}}</text>
+                  <text class="clock-count-unit">元</text>
+                </view>
+                <view class="clock-day-desc">{{item.clockInTimes === 1 ? '' : '连续'}}打卡<text class="clock-day-count">{{item.clockInTimes}}</text>天</view>
               </view>
-              <view class="clock-day-desc">已连打<text class="clock-day-count">{{item.clockInTimes}}</text>天</view>
-            </view>
-            <view class="clock-task-right">
-              <image class="clock-right-img" src="/images/right_{{item.status === 1 ? 'red' : 'gray'}}.png" />
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="module-wrap">
-        <view class="module-title">
-          <text class="title-text">常规提现</text>
-        </view>
-        <view class="withdraw-list">
-          <view wx:for="{{withdrawList}}" wx:key="count" class="withdraw-item">
-            <image class="withdraw-bg-img" src="/images/common_withdraw_bg.png" />
-            <view class="limit-tips">限领1次</view>
-            <view class="withdraw-item-content">
-              <view class="clock-count-wrap">
-                <text class="clock-count-text">{{item.count}}</text>
-                <text class="clock-count-unit">元</text>
+              <view class="clock-task-right">
+                <image class="clock-right-img" src="/images/right_{{item.status === 0 || item.status === 1 ? 'red' : 'gray'}}.png" />
               </view>
-              <view class="withdraw-btn" data-amount="{{item.count}}" bindtap="commonWithdraw">提现</view>
             </view>
           </view>
         </view>
-      </view>
-      <view class="module-wrap">
-        <view class="module-title">
-          <text class="title-text">提现说明</text>
+        <view class="module-wrap">
+          <view class="module-title">
+            <text class="title-text">常规提现</text>
+          </view>
+          <view class="withdraw-list">
+            <view wx:for="{{withdrawList}}" wx:key="count" class="withdraw-item">
+              <image class="withdraw-bg-img" src="/images/common_withdraw_bg.png" />
+              <view class="limit-tips">限领1次</view>
+              <view class="withdraw-item-content">
+                <view class="clock-count-wrap">
+                  <text class="clock-count-text">{{item.count}}</text>
+                  <text class="clock-count-unit">元</text>
+                </view>
+                <view class="withdraw-btn" data-amount="{{item.count}}" bindtap="commonWithdraw">提现</view>
+              </view>
+            </view>
+          </view>
         </view>
-        <view class="withdraw-desc">
-          <view>1.由于微信提现支付需要实名制，请务必保证提现的微信号进行实名认证</view>
-          <view>2.单笔提现金额最低0.3元，最高500元，每种金额均仅提现一次（即最多可提现7次）</view>
-          <view>3.如发现作弊、外挂等违规手段获取奖励，答题红包有权判定奖励无效</view>
+        <view class="module-wrap">
+          <view class="module-title">
+            <text class="title-text">提现说明</text>
+          </view>
+          <view class="withdraw-desc">
+            <view>1.由于微信提现支付需要实名制，请务必保证提现的微信号进行实名认证</view>
+            <view>2.单笔提现金额最低0.3元，最高500元，每种金额均仅提现一次（即最多可提现7次）</view>
+            <view>3.如发现作弊、外挂等违规手段获取奖励，答题红包有权判定奖励无效</view>
+          </view>
         </view>
       </view>
     </view>
   </view>
-</view>
+</block>
 
 <dialog show="{{withdrawVisile}}" ext-class="withdraw-modal" mask-closable="{{false}}">
   <view class="modal-content-wrap">

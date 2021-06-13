@@ -6,6 +6,11 @@
   padding-right: 32rpx;
 }
 
+.default-poetry {
+  padding: 50rpx;
+  margin-top: 200rpx;
+}
+
 .container .bg-img {
   position: absolute;
   top: 0;

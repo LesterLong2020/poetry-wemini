@@ -9,6 +9,11 @@ page {
   padding-top: 0;
 }
 
+.default-poetry {
+  padding: 50rpx;
+  margin-top: 200rpx;
+}
+
 .scroll-wrap {
   position: relative;
   padding: 112rpx 32rpx 45rpx;

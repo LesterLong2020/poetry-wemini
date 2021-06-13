@@ -229,11 +229,23 @@ Page({
    */
   closeEnvelope() {
     const { redEnvelope: { type } } = this.data;
-    this.setData({
-      envelopeVisible: false
-    });
-    if ( type === 1 ) {
-      this.refreshQuestion();
+    if ( type === 0 ) {
+      this.setData({
+        envelopeVisible: false
+      });
+    } else if (type === 1) {
+      wx.showModal({
+        title: '提示',
+        content: '确认是否关闭？若选择确定关闭，则无法获得奖励',
+        success: (res) => {
+          if (res.confirm) {
+            this.setData({
+              envelopeVisible: false
+            });
+            this.refreshQuestion();
+          }
+        }
+      })
     }
   },
 
@@ -264,7 +276,7 @@ Page({
     } else {
       wx.showModal({
         title: '提示',
-        content: '是否回答正确',
+        content: '广告内容',
         success: (res) => {
           if (res.confirm) {
             console.log('用户点击确定');

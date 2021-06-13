@@ -6,7 +6,8 @@ import {
   queryClockInfo,
   saveQrCodeImg,
   goldToAmount,
-  clockWithdraw
+  clockWithdraw,
+  queryIsShow,
 } from '../../utils/api';
 
 const app = getApp();
@@ -17,7 +18,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    openId: '',
+    isShow: false,
     accountInfo: {
       goldCoinCount: 0,
       amount: 0
@@ -51,6 +52,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    this.getIsShow();
     if (wx.getUserProfile) {
       this.setData({
         canIUseGetUserProfile: true
@@ -69,12 +71,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    // const openId = wx.getStorageSync('openId');
-    // report({
-    //   openId,
-    //   page: '提现',
-    //   type: reportType.page
-    // });
     if (this.getTabBar().data.selected !== 2) {
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
@@ -199,6 +195,9 @@ Page({
         }, 300)
       } catch (err) {
         console.warn(err);
+        if (!this.data.accountInfo.collectMoneyUrl) {
+          this.showModal(1);
+        }
         report({
           subType: 'true_cash_out',
           content: {
@@ -208,6 +207,16 @@ Page({
           type: reportType.button
         });
       }
+    } else if (status === 0) {
+      wx.showToast({
+        title: '未达到提现要求！',
+        icon: 'none'
+      });
+    } else {
+      wx.showToast({
+        title: '已提现过！',
+        icon: 'none'
+      });
     }
   },
 
@@ -405,24 +414,41 @@ Page({
       type: reportType.button
     });
     const { accountInfo: { goldCoinCount } } = this.data;
-    wx.showModal({
-      title: '提示',
-      content: `可以兑换现金：${(goldCoinCount/100000).toFixed(2)}元`,
-      success: async (res) => {
-        if (res.confirm) {
-          console.log('用户点击确定');
-          const res = await goldToAmount();
-          if (res) {
-            wx.showToast({
-              title: '兑换成功！',
-              icon: 'success'
-            });
-            this.getAccountInfo();
+    if (goldCoinCount < 1000) {
+      wx.showToast({
+        title: '金币不足1000，无法兑换',
+        icon: 'none'
+      })
+    } else {
+      wx.showModal({
+        title: '提示',
+        content: `可以兑换现金：${(goldCoinCount/100000).toFixed(2)}元`,
+        success: async (res) => {
+          if (res.confirm) {
+            console.log('用户点击确定');
+            const res = await goldToAmount();
+            if (res) {
+              wx.showToast({
+                title: '兑换成功！',
+                icon: 'success'
+              });
+              this.getAccountInfo();
+            }
+          } else if (res.cancel) {
+            console.log('用户点击取消');
           }
-        } else if (res.cancel) {
-          console.log('用户点击取消');
         }
-      }
+      })
+    }
+  },
+
+  /**
+    * 查询是否显示
+    */
+   async getIsShow() {
+    const res = await queryIsShow();
+    this.setData({
+      isShow: res
     })
-  }
+  },
 })
