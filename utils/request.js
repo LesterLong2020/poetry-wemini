@@ -36,7 +36,6 @@ const request = (url, data, method = 'GET', config = {}) => {
         reject(err);
       },
       complete(res) {
-        reject(res);
         if (res.data.code === -401) {
           login();
         }

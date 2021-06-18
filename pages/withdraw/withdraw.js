@@ -18,7 +18,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    isShow: false,
+    isShow: 0,
     accountInfo: {
       goldCoinCount: 0,
       amount: 0
@@ -78,7 +78,7 @@ Page({
         });
       }
       const token = wx.getStorageSync('token');
-      if (token) {
+      if (token && app.globalData.isValid) {
          this.getAccountInfo();
          this.getClockInfo();
          report({
@@ -209,12 +209,12 @@ Page({
       }
     } else if (status === 0) {
       wx.showToast({
-        title: '未达到提现要求！',
+        title: '打卡天数不足，快去领红包完成打卡吧',
         icon: 'none'
       });
     } else {
       wx.showToast({
-        title: '已提现过！',
+        title: '每种金额仅能提现一次，请选择其他金额',
         icon: 'none'
       });
     }
@@ -306,12 +306,21 @@ Page({
    * 保存收款二维码
    */
   saveQrCode() {
-    const { qrCodeUrl } = this.data;
+    const { qrCodeUrl, accountInfo: { collectMoneyUrl } } = this.data;
     if (!qrCodeUrl) {
-      return wx.showToast({
-        title: '请选择图片',
-        icon: 'none'
-      })
+      if (collectMoneyUrl) {
+        wx.showToast({
+          title: '保存成功',
+          icon: 'success'
+        });
+        this.closeModal();
+      } else {
+        wx.showToast({
+          title: '请选择图片',
+          icon: 'none'
+        })
+      }
+      return false;
     }
     wx.uploadFile({
       url: `${apiPrefix}/api/images/upload`,
@@ -446,9 +455,11 @@ Page({
     * 查询是否显示
     */
    async getIsShow() {
+    wx.showLoading();
     const res = await queryIsShow();
+    wx.hideLoading();
     this.setData({
-      isShow: res
+      isShow: res ? 1 : 2
     })
   },
 })

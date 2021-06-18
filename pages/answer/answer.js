@@ -65,7 +65,7 @@ Page({
       });
     }
     const token = wx.getStorageSync('token');
-    if (token) {
+    if (token && app.globalData.isValid) {
       this.getAccountInfo();
       this.getScheduleRedInfo();
       this.getQuestion();
@@ -290,6 +290,11 @@ Page({
             });
           } else if (res.cancel) {
             console.log('用户点击取消');
+            wx.showToast({
+              title: '需看完广告才能获得现金红包哦',
+              icon: 'none',
+              duration: 2000
+            })
             this.refreshQuestion();
             report({
               subType: 'pass_envelop',
@@ -438,6 +443,11 @@ Page({
     const res = await receivePassRed({ level: questionCount, amount });
     this.refreshQuestion();
     if (res) {
+      wx.showToast({
+        title: `恭喜您获得${amount}元现金，已放入现金账户`,
+        icon: 'none',
+        duration: 2000
+      })
       this.getAccountInfo();
     }
   },

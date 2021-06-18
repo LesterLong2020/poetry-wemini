@@ -12,7 +12,7 @@
   module.exports.formatThousand = formatThousand;
 </wxs>
 
-<view wx:if="{{!isShow}}" class="default-poetry">
+<view wx:if="{{isShow === 2}}" class="default-poetry">
   噫吁嚱，危乎高哉！蜀道之难，难于上青天！
   蚕丛及鱼凫，开国何茫然！
   尔来四万八千岁，不与秦塞通人烟。
@@ -35,7 +35,7 @@
   锦城虽云乐，不如早还家。
   蜀道之难,难于上青天，侧身西望长咨嗟！
 </view>
-<block wx:else>
+<block wx:elif="{{isShow === 1}}">
   <navigation title="提现" show-back="{{false}}" show-home="{{false}}" />
   <view class="container">
     <view class="scroll-wrap">

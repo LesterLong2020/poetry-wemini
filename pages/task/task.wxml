@@ -11,7 +11,7 @@
   module.exports.formatThousand = formatThousand;
 </wxs>
 
-<view wx:if="{{!isShow}}" class="default-poetry">
+<view wx:if="{{isShow === 2}}" class="default-poetry">
   君不见黄河之水天上来，奔流到海不复回。
   君不见高堂明镜悲白发，朝如青丝暮成雪。
   人生得意须尽欢，莫使金樽空对月。
@@ -26,7 +26,7 @@
   五花马，千金裘，
   呼儿将出换美酒，与尔同销万古愁。
 </view>
-<block wx:else>
+<block wx:elif="{{isShow === 1}}">
   <navigation title="任务" show-back="{{false}}" show-home="{{false}}" />
   <view class="container">
     <image class="bg-img" src="/images/index_bg.png" />

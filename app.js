@@ -1,5 +1,5 @@
 // app.js
-import { login } from "./utils/util";
+import { login, isTokenInvalid } from "./utils/util";
 
 App({
   onLaunch() {
@@ -10,15 +10,24 @@ App({
   },
 
   async onShow() {
-    await login();
-    this.loginCallBack && this.loginCallBack();
+    const res = await isTokenInvalid();
+    if (!res) {
+      await login();
+      this.globalData.isValid = true;
+      this.loginCallBack && this.loginCallBack();
+    } else {
+      this.globalData.isValid = true;
+      this.loginCallBack && this.loginCallBack();
+    }
   },
 
   onHide() {
-    console.log('隐藏')
+    console.log('隐藏');
+    this.globalData.isValid = false;
   },
 
   globalData: {
-    userInfo: null
+    userInfo: null,
+    isValid: false
   },
 })

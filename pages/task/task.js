@@ -18,7 +18,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    isShow: false,
+    isShow: 0, // 0 初始 1 显示 2默认
     accountInfo: {
       goldCoinCount: 0,
       amount: 0
@@ -69,7 +69,7 @@ Page({
     }
 
     const token = wx.getStorageSync('token');
-    if (token) {
+    if (token && app.globalData.isValid) {
       this.getAccountInfo();
       this.getTaskList();
       this.getRedWallList();
@@ -276,7 +276,7 @@ Page({
    */
   async receiveEnvelope(finishedAd = false) {
     const { rewardInfo: { type, rewardId, index }, redEnvelope: { amount } } = this.data;
-    const param = type === 0 ? { rewardId } : { index, finishedAd, amount };
+    const param = type === 0 ? { rewardId } : { index, finishedAd, goldCoin: amount };
     const apiFc = type === 0 ? receiveDailyReward : receiveRedWall;
     const res = await apiFc(param);
     if (res) {
@@ -288,6 +288,11 @@ Page({
     if (type === 0) {
       this.getTaskList();
     } else {
+      wx.showToast({
+        title: `恭喜您获得${res.totalCoin}金币，已放入金币账户（可兑换现金）`,
+        icon: 'none',
+        duration: 2000
+      })
       this.getRedWallList();
     }
   },
@@ -395,9 +400,11 @@ Page({
    * 查询是否显示
    */
   async getIsShow() {
+    wx.showLoading();
     const res = await queryIsShow();
+    wx.hideLoading();
     this.setData({
-      isShow: res
+      isShow: res ? 1 : 2
     })
   },
 })
