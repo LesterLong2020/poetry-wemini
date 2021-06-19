@@ -155,5 +155,5 @@ export function queryRedWallAmount() {
  * 查询是否显示
  */
 export function queryIsShow() {
-  return request(`${apiPrefix}/api/wechat/check-version`, { version: '1.0.3' });
+  return request(`${apiPrefix}/api/wechat/check-version`, { version: '1.0.4' });
 }

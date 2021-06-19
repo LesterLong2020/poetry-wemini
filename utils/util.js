@@ -26,7 +26,7 @@ export const login = () => {
           Object.entries(res).forEach(([key, val]) => {
             wx.setStorageSync(key, val);
           });
-          resolve();
+          resolve(res.token);
         } else {
           reject('some error');
         }
