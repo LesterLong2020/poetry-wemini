@@ -6,6 +6,7 @@ import {
 } from '../../utils/api';
 
 const app = getApp();
+let videoAd = null;
 
 Page({
 
@@ -39,6 +40,46 @@ Page({
    */
   onLoad: function (options) {
     this.getIsShow();
+    videoAd = wx.createRewardedVideoAd({
+      adUnitId: 'adunit-359c0ea9fd8d94d0'
+    })
+    videoAd.onLoad(() => {
+      console.log('加载完毕');
+    })
+    videoAd.onError((err) => {
+      console.log('广告加载错误', err);
+    })
+    videoAd.onClose((res) => {
+      console.log(res, '关闭广告');
+      if (this.data.isShow) {
+        if (res.isEnded) {
+          this.reveivePassRedEnvelope();
+          report({
+            subType: 'pass_envelop',
+            content: {
+              result: 'complete'
+            },
+            type: reportType.incentive
+          });
+        } else {
+          wx.showToast({
+            title: '需看完广告才能获得现金红包哦',
+            icon: 'none',
+            duration: 2000
+          })
+          this.refreshQuestion();
+          report({
+            subType: 'pass_envelop',
+            content: {
+              result: 'uncomplete'
+            },
+            type: reportType.incentive
+          });
+        }
+      } else {
+        this.refreshQuestion();
+      }
+    })
     // const audioContext = wx.createInnerAudioContext();
     // audioContext.src = '/audio/qnl.mp3';
     // audioContext.loop = true;
@@ -201,13 +242,21 @@ Page({
           });
         }, 500)
       } else {
+        videoAd.show().catch(() => {
+          // 失败重试
+          videoAd.load()
+            .then(() => videoAd.show())
+            .catch(err => {
+              console.log('激励视频 广告显示失败', err)
+            })
+        })
         wx.showToast({
           title: '回答正确！',
           icon: 'success'
         });
-        setTimeout(() => {
-          this.refreshQuestion();
-        }, 1500);
+        // setTimeout(() => {
+        //   this.refreshQuestion();
+        // }, 1500);
       }
     } else {
       report({
@@ -274,37 +323,13 @@ Page({
     if (type === 0) { 
       this.receiveScheduleRed();
     } else {
-      wx.showModal({
-        title: '提示',
-        content: '广告内容',
-        success: (res) => {
-          if (res.confirm) {
-            console.log('用户点击确定');
-            this.reveivePassRedEnvelope();
-            report({
-              subType: 'pass_envelop',
-              content: {
-                result: 'complete'
-              },
-              type: reportType.incentive
-            });
-          } else if (res.cancel) {
-            console.log('用户点击取消');
-            wx.showToast({
-              title: '需看完广告才能获得现金红包哦',
-              icon: 'none',
-              duration: 2000
-            })
-            this.refreshQuestion();
-            report({
-              subType: 'pass_envelop',
-              content: {
-                result: 'uncomplete'
-              },
-              type: reportType.incentive
-            });
-          }
-        }
+      videoAd.show().catch(() => {
+        // 失败重试
+        videoAd.load()
+          .then(() => videoAd.show())
+          .catch(err => {
+            console.log('激励视频 广告显示失败', err)
+          })
       })
     }
   },

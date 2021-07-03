@@ -11,6 +11,7 @@ import {
 } from '../../utils/api';
 
 const app = getApp();
+let videoAd = null;
 
 Page({
 
@@ -49,6 +50,36 @@ Page({
    */
   onLoad: function (options) {
     this.getIsShow();
+    videoAd = wx.createRewardedVideoAd({
+      adUnitId: 'adunit-359c0ea9fd8d94d0'
+    })
+    videoAd.onLoad(() => {
+      console.log('加载完毕');
+    })
+    videoAd.onError((err) => {
+      console.log('广告加载错误', err);
+    })
+    videoAd.onClose((res) => {
+      if (res.isEnded) {
+        this.receiveEnvelope(true);
+        report({
+          subType: 'goldcoin_envelop',
+          content: {
+            result: 'complete'
+          },
+          type: reportType.incentive
+        });
+      } else {
+        this.receiveEnvelope(false);
+        report({
+          subType: 'goldcoin_envelop',
+          content: {
+            result: 'uncomplete'
+          },
+          type: reportType.incentive
+        });
+      }
+    })
   },
 
   /**
@@ -286,15 +317,28 @@ Page({
       envelopeVisible: false
     });
     if (type === 0) {
+      wx.showToast({
+        title: `恭喜您获得${amount}金币，已放入金币账户（可兑换现金）`,
+        icon: 'none',
+        duration: 2000
+      })
       this.getTaskList();
     } else {
       wx.showToast({
-        title: `恭喜您获得${res.totalCoin}金币，已放入金币账户（可兑换现金）`,
+        title: `恭喜您获得${this.formatGold(res.totalCoin)}金币，已放入金币账户（可兑换现金）`,
         icon: 'none',
         duration: 2000
       })
       this.getRedWallList();
     }
+  },
+
+  /**
+   * 格式化金币
+   * @param {*} num 
+   */
+ formatGold (num) {
+    return num < 10000 ? num : parseInt(num / 10000) + '万';
   },
 
   /**
@@ -310,32 +354,13 @@ Page({
   acceptEnvelope() {
     const { rewardInfo: { type } } = this.data;
     if (type === 1) {
-      wx.showModal({
-        title: '看视频广告',
-        content: '广告内容',
-        success: (res) => {
-          if (res.confirm) {
-            console.log('用户点击确定');
-            this.receiveEnvelope(true);
-            report({
-              subType: 'goldcoin_envelop',
-              content: {
-                result: 'complete'
-              },
-              type: reportType.incentive
-            });
-          } else if (res.cancel) {
-            console.log('用户点击取消');
-            this.receiveEnvelope(false);
-            report({
-              subType: 'goldcoin_envelop',
-              content: {
-                result: 'uncomplete'
-              },
-              type: reportType.incentive
-            });
-          }
-        }
+      videoAd.show().catch(() => {
+        // 失败重试
+        videoAd.load()
+          .then(() => videoAd.show())
+          .catch(err => {
+            console.log('激励视频 广告显示失败', err)
+          })
       })
     } else {
       this.receiveEnvelope(false);
