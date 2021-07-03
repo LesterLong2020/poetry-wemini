@@ -14,7 +14,7 @@ export const reportType = {
 
 /**
  * 数据上报
- * @param {*} data 
+ * @param {*} data
  */
 export function report(data) {
   const clientTs = parseInt(Date.now() / 1000);
@@ -23,7 +23,7 @@ export function report(data) {
 
 /**
  * 登录
- * @param {*} data 
+ * @param {*} data
  */
 export function loginForToken(data) {
   return request(`${apiPrefix}/api/wechat/login`, { ...data }, 'POST');
@@ -45,7 +45,7 @@ export function queryNextQuestion() {
 
 /**
  * 提交答案
- * @param {*} data 
+ * @param {*} data
  */
 export function submitAnswer(data) {
   return request(`${apiPrefix}/api/question/submit`, { ...data }, 'POST');
@@ -53,7 +53,7 @@ export function submitAnswer(data) {
 
 /**
  * 获取过关红包金额
- * @param {*} data 
+ * @param {*} data
  */
 export function queryPassRedAmount(data) {
   return request(`${apiPrefix}/api/question/level-rp`, { ...data });
@@ -61,7 +61,7 @@ export function queryPassRedAmount(data) {
 
 /**
  * 领取过关红包
- * @param {*} data 
+ * @param {*} data
  */
 export function receivePassRed(data) {
   return request(`${apiPrefix}/api/question/receive-level-rp`, { ...data }, 'POST');
@@ -76,7 +76,7 @@ export function queryClockInfo() {
 
 /**
  * 兑换金币成余额
- * @param {*} 
+ * @param {*}
  */
 export function goldToAmount() {
   return request(`${apiPrefix}/api/account/exchange-gold-coin`, {}, 'POST');
@@ -84,7 +84,7 @@ export function goldToAmount() {
 
 /**
  * 获取每日任务过关奖励
- * @param {*} data 
+ * @param {*} data
  */
 export function receiveDailyReward(data) {
   return request(`${apiPrefix}/api/account/receive-level-clear-reward`, { ...data }, 'POST');
@@ -92,7 +92,7 @@ export function receiveDailyReward(data) {
 
 /**
  * 上报使用时长
- * @param {*} data 
+ * @param {*} data
  */
 export function reportDuration (data) {
   return request(`${apiPrefix}/api/account/report-duration`, { ...data }, 'POST');
@@ -107,7 +107,7 @@ export function queryScheduleRedInfo() {
 
 /**
  * 领取天降红包
- * @param {*} data 
+ * @param {*} data
  */
 export function receiveScheduleRed(data) {
   return request(`${apiPrefix}/api/reward/receive-schedule-rp`, { ...data }, 'POST');
@@ -122,7 +122,7 @@ export function queryRedWallList() {
 
 /**
  * 领取红包墙
- * @param {*} data 
+ * @param {*} data
  */
 export function receiveRedWall(data) {
   return request(`${apiPrefix}/api/reward/receive-rp-wall`, { ...data }, 'POST');
@@ -130,7 +130,7 @@ export function receiveRedWall(data) {
 
 /**
  * 更新收款二维码
- * @param {*} data 
+ * @param {*} data
  */
 export function saveQrCodeImg(data) {
   return request(`${apiPrefix}/api/account/update-collect-money-picture`, { ...data }, 'POST');
@@ -138,7 +138,7 @@ export function saveQrCodeImg(data) {
 
 /**
  * 打卡提现申请
- * @param {*} data 
+ * @param {*} data
  */
 export function clockWithdraw(data) {
   return request(`${apiPrefix}/api/reward/clock-in-withdraw`, { ...data }, 'POST');

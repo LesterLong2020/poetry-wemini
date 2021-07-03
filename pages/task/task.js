@@ -98,7 +98,6 @@ Page({
           selected: 1
       });
     }
-
     const token = wx.getStorageSync('token');
     if (token && app.globalData.isValid) {
       this.getAccountInfo();
