@@ -303,13 +303,15 @@ Page({
    */
   async openEnvelopeModal() {
     await this.getScheduleRedInfo();
-    this.setData({
-      envelopeVisible: true
-    });
-    report({
-      subType: 'skyfall_envelop',
-      type: reportType.popup
-    });
+    if (this.data.timeLeft === 0) {
+      this.setData({
+        envelopeVisible: true
+      });
+      report({
+        subType: 'skyfall_envelop',
+        type: reportType.popup
+      });
+    }
   },
 
   /**

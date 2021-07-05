@@ -404,9 +404,9 @@ Page({
   async getClockInfo() {
     const res = await queryClockInfo();
     if (res) {
-      const { levelClearCount, expectedLevel, keepClockDays, clockInRewards } = res;
+      const { levelClearRedPacketCount, expectedLevel, keepClockDays, clockInRewards } = res;
       this.setData({
-        levelClearCount,
+        levelClearCount: levelClearRedPacketCount || 0,
         expectedLevel,
         keepClockDays,
         clockInTaskList: clockInRewards
